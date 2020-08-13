@@ -52,7 +52,7 @@ export default class Rtp extends EventEmitter {
         );
     }
 
-    async createOffer(): Promise<string> {
+    async createOffer(): Promise<RTCSessionDescription | undefined> {
         const offerSessionDescInit = await this.rtcPeerConnection?.createOffer({
             offerToReceiveVideo: true,
             offerToReceiveAudio: true,
@@ -62,13 +62,11 @@ export default class Rtp extends EventEmitter {
             if (offerSdp) {
                 await this.rtcPeerConnection?.setLocalDescription(offerSdp);
             }
-
-            return offerSdp.sdp;
+            return offerSdp;
         }
-        return '';
     }
 
-    async createAnswer(offerSdp: any): Promise<string> {
+    async createAnswer(offerSdp: any): Promise<RTCSessionDescription | undefined> {
         if (offerSdp) {
             await this.rtcPeerConnection?.setRemoteDescription(new RTCSessionDescription(offerSdp));
         }
@@ -85,14 +83,19 @@ export default class Rtp extends EventEmitter {
                 await this.rtcPeerConnection?.setLocalDescription(answerSdp);
             }
 
-            return answerSdp.sdp;
+            return answerSdp;
         }
-        return '';
     }
 
     async setAnswerSdp(answerSdp: any) {
         if (answerSdp) {
-            await this.rtcPeerConnection?.setLocalDescription(answerSdp);
+            await this.rtcPeerConnection?.setRemoteDescription(
+                new RTCSessionDescription(answerSdp),
+            );
         }
+    }
+    
+    async setIceCandidate(candidate: any) {
+        await this.rtcPeerConnection?.addIceCandidate(candidate);
     }
 }

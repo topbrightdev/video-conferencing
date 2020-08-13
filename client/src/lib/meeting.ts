@@ -1,7 +1,6 @@
 import { EventEmitter } from 'events';
 import Transport from './transport';
 import Connection from './connection';
-import Rtp from './Rtp';
 
 const url = 'ws://localhost:8081/websocket/meeting';
 
@@ -11,6 +10,7 @@ type IncomingMessageType =
     | 'incoming-connection-request'
     | 'offer-sdp'
     | 'answer-sdp'
+    | 'icecandidate'
     | 'meeting-ended'
     | 'user-left'
     | 'unknown';
@@ -33,7 +33,12 @@ type SendMessageType = OutgoingMessageType;
 interface UserJoinedData {
     userId: string;
     name: string;
-    sdp: string;
+    sdp: any;
+}
+interface IceCandidateData {
+    userId: string;
+    name: string;
+    candidate: any;
 }
 interface PayloadDataMap {
     'joined-meeting': UserJoinedData;
@@ -43,6 +48,7 @@ interface PayloadDataMap {
     'answer-sdp': UserJoinedData;
     'meeting-ended': UserJoinedData;
     'user-left': UserJoinedData;
+    icecandidate: IceCandidateData;
     unknown: UserJoinedData;
 }
 interface MeetingOptions {
@@ -130,6 +136,11 @@ export default class Meeting extends EventEmitter {
             case 'meeting-ended':
                 this.meetingEnded(payload.data);
                 break;
+            case 'icecandidate':
+                this.setIceCandidate(payload.data);
+                break;
+            default:
+                break;
         }
     }
     getConnection(userId: string): Connection | undefined {
@@ -145,7 +156,9 @@ export default class Meeting extends EventEmitter {
         this.userId = data.userId;
     }
 
-    userJoined(data: PayloadDataMap['user-joined']) {
+    createConnection(
+        data: PayloadDataMap['user-joined'] | PayloadDataMap['incoming-connection-request'],
+    ): Connection | undefined {
         if (this.stream) {
             const connection = new Connection({
                 connectionType: 'incoming',
@@ -155,13 +168,20 @@ export default class Meeting extends EventEmitter {
             });
             connection.on('connected', () => {
                 alert('rtp connected');
-                this.requestConnection(connection.userId);
             });
             connection.start();
             connection.on('icecandidate', (candidate) => {
                 this.sendIceCandidate(connection.userId, candidate);
             });
             this.connections.push(connection);
+            return connection;
+        }
+        return undefined;
+    }
+    userJoined(data: PayloadDataMap['user-joined']) {
+        const connection = this.createConnection(data);
+        if (connection) {
+            this.requestConnection(connection.userId);
         }
     }
 
@@ -180,7 +200,10 @@ export default class Meeting extends EventEmitter {
     }
 
     incomingConnectionRequest(data: PayloadDataMap['incoming-connection-request']) {
-        this.sendOfferSdp(data.userId);
+        const connection = this.createConnection(data);
+        if (connection) {
+            this.sendOfferSdp(data.userId);
+        }
     }
 
     async sendOfferSdp(otherUserId: string) {
@@ -197,10 +220,15 @@ export default class Meeting extends EventEmitter {
         this.sendAnswerSdp(data.userId, data.sdp);
     }
 
-    async sendAnswerSdp(otherUserId: string, sdp: string) {
+    async sendAnswerSdp(otherUserId: string, sdp: any) {
         const connection = this.getConnection(otherUserId);
         if (connection) {
-            await connection?.createAnswer(sdp);
+            const answerSdp = await connection?.createAnswer(sdp);
+            this.sendMessage('answer-sdp', {
+                userId: this.userId,
+                otherUserId: otherUserId,
+                sdp: answerSdp,
+            });
         }
     }
 
@@ -209,8 +237,13 @@ export default class Meeting extends EventEmitter {
         await connection?.setAnswerSdp(data.sdp);
     }
 
+    async setIceCandidate(data:PayloadDataMap['icecandidate']){
+        const connection = this.getConnection(data.userId);
+        await connection?.setIceCandidate(data.candidate);
+    }
+
     userLeft(data: PayloadDataMap['user-left']) {
-        this.connections = this.connections.filter((conn) => conn.userId != data.userId);
+        this.connections = this.connections.filter((conn) => conn.userId !== data.userId);
     }
 
     meetingEnded(data: PayloadDataMap['meeting-ended']) {

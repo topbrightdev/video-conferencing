@@ -1,4 +1,3 @@
-import { EventEmitter } from 'events';
 import Rtp from './Rtp';
 
 type ConnectionType = 'incoming' | 'outgoing';

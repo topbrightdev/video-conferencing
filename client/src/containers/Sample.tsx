@@ -4,13 +4,16 @@ import Meeting from '../lib/meeting';
 import { v4 as uuidV4 } from 'uuid';
 
 const meetingId = 'e4bd85a0-623b-4096-993b-2997aec423be';
-const meeting = new Meeting({ stream: new MediaStream(), meetingId });
+let meeting: Meeting | null = null;
+navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
+    meeting = new Meeting({ stream, meetingId });
+});
 
 const Sample: React.FC = () => {
     return (
         <div>
-            <button onClick={() => meeting.end()}>End</button>
-            <button onClick={() => meeting.leave()}>Leave</button>
+            <button onClick={() => meeting?.end()}>End</button>
+            <button onClick={() => meeting?.leave()}>Leave</button>
         </div>
     );
 };
