@@ -23,6 +23,7 @@ interface MessagePayload {
         | 'end-meeting'
         | 'user-left'
         | 'meeting-ended'
+        | 'icecandidate'
         | 'unknown';
     data?: any;
 }
@@ -158,7 +159,24 @@ function forwardAnswerSdp(meetingId: string, socket: Websocket, payload: Message
         });
     }
 }
-
+interface IceCandidatePayload {
+    userId: string;
+    otherUserId: string;
+    candidate: any;
+}
+function forwardIceCandidate(meetingId: string, socket: Websocket, payload: MessagePayload) {
+    const { userId, otherUserId, candidate } = payload.data as IceCandidatePayload;
+    const otherUser = getMeetingUser(meetingId, otherUserId);
+    if (otherUser?.socket) {
+        sendMessage(otherUser?.socket, {
+            type: 'icecandidate',
+            data: {
+                userId,
+                candidate,
+            },
+        });
+    }
+}
 interface UserLeftPayload {
     userId: string;
 }
@@ -205,6 +223,9 @@ function handleMessage(meetingId: string, socket: Websocket, message: Data) {
                 break;
             case 'answer-sdp':
                 forwardAnswerSdp(meetingId, socket, payload);
+                break;
+            case 'icecandidate':
+                forwardIceCandidate(meetingId, socket, payload);
                 break;
             case 'leave-meeting':
                 userLeft(meetingId, socket, payload);
