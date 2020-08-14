@@ -1,4 +1,4 @@
-import Rtp from './Rtp';
+import Rtp from './rtp';
 
 type ConnectionType = 'incoming' | 'outgoing';
 
