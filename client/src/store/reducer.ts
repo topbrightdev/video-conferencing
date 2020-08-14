@@ -1,8 +1,7 @@
 import { combineReducers } from 'redux';
+import meetingReducer from './meeting/reducer';
 
 const rootReducer = combineReducers({
-    test: (state: {}, action) => {
-        return { ...state };
-    },
+    meeting: meetingReducer,
 });
 export default rootReducer;
