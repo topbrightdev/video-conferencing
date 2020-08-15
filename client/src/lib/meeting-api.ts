@@ -11,3 +11,13 @@ export const start = async (name: string): Promise<StartResponse> => {
 
     return response.data;
 };
+
+interface JoinResponse {
+    id: string;
+    hostId: string;
+    hostName: string;
+}
+export const join = async (meetingId: string): Promise<JoinResponse> => {
+    const response = await MeetingApi.get(`/join?meetingId=${meetingId}`);
+    return response.data;
+};

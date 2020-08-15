@@ -11,6 +11,8 @@ import {
     JOINED,
     JoinedAction,
 } from './types';
+import { MeetingDetail } from '../../types';
+import Meeting from '../../lib/meeting';
 
 interface StartParam {
     name: string;
@@ -27,11 +29,17 @@ export const start = ({ name, meetingId }: StartParam) => async (
     localStorage.setItem('meetingId', meetingId);
 };
 
-export const join = () => (dispatch: Dispatch<JoinAction>) => {
-    dispatch({
-        type: JOIN,
-        payload: {},
-    });
+export const join = (meetingDetail: MeetingDetail) => async (dispatch: Dispatch<JoinAction>) => {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        const meeting = new Meeting({ meetingId: meetingDetail.id, stream });
+        dispatch({
+            type: JOIN,
+            payload: { meetingDetail, meeting, stream },
+        });
+    } catch (error) {
+        console.log(error);
+    }
 };
 export const joined = () => (dispatch: Dispatch<JoinedAction>) => {
     dispatch({
