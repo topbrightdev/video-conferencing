@@ -1,5 +1,5 @@
 import axios from 'axios';
-import { loadUser } from './user';
+import { loadUserId } from './user';
 
 const MeetingApi = axios.create({ baseURL: 'http://localhost:8081/meeting' });
 
@@ -7,7 +7,7 @@ interface StartResponse {
     meetingId: string;
 }
 export const start = async (name: string): Promise<StartResponse> => {
-    const response = await MeetingApi.post<StartResponse>('/start', { name, userId: loadUser() });
+    const response = await MeetingApi.post<StartResponse>('/start', { name, userId: loadUserId() });
 
     return response.data;
 };

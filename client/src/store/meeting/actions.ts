@@ -35,8 +35,10 @@ export const join = (meetingDetail: MeetingDetail) => async (
     dispatch: Dispatch<JoinAction | any>,
 ) => {
     try {
+        const name = localStorage.getItem('name') || '';
+        const userId = localStorage.getItem('userId') || '';
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        const meeting = new Meeting({ meetingId: meetingDetail.id, stream });
+        const meeting = new Meeting({ meetingId: meetingDetail.id, stream, name, userId });
         meeting.on('connection', (connection: Connection) => {
             dispatch(newConnection(connection));
         });

@@ -20,6 +20,8 @@ const url = 'ws://localhost:8081/websocket/meeting';
 interface MeetingOptions {
     meetingId: string;
     stream: MediaStream;
+    userId: string;
+    name: string;
 }
 export default class Meeting extends EventEmitter {
     transport: Transport | null;
@@ -34,6 +36,8 @@ export default class Meeting extends EventEmitter {
     constructor(options: MeetingOptions) {
         super();
         this.meetingId = options.meetingId;
+        this.userId = options.userId;
+        this.name = options.name;
         this.transport = new Transport({
             url: this.formatUrl(options.meetingId),
             reconnect: true,
@@ -114,7 +118,7 @@ export default class Meeting extends EventEmitter {
     }
 
     join() {
-        this.sendMessage('join-meeting', { name: this.name });
+        this.sendMessage('join-meeting', { name: this.name, userId: this.userId });
     }
 
     joinedMeeting(data: JoinedMeetingData) {
@@ -162,6 +166,7 @@ export default class Meeting extends EventEmitter {
         this.sendMessage('connection-request', {
             userId: this.userId,
             otherUserId: userId,
+            name: this.name,
         });
     }
 

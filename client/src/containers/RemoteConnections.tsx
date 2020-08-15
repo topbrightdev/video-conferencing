@@ -94,7 +94,7 @@ const RemoteConnections: React.FC<RemoteConnectionsProps> = ({ connections }) =>
                             {connection.remoteStream && (
                                 <VideoElement stream={connection.remoteStream} className="w-full" />
                             )}
-                            <div className="name text-white text-sm">{connection.name}test</div>
+                            <div className="name text-white text-sm">{connection.name}</div>
                         </div>
                     </div>
                 );

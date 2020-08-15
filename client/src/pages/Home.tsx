@@ -14,19 +14,28 @@ const Wrapper = styled.div`
     main {
         min-height: 300px;
     }
-    .name {
-        width: 75%;
+    .meeting-action-container {
+        width: 100%;
+    }
+    @media screen and (min-width: 400px) {
+        .meeting-action-container {
+            width: 400px;
+        }
     }
 `;
 
 const HomePage: React.FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const [name, setName] = useState('');
+    const [meetingId, setMeetingId] = useState('');
 
     const startMeeting = async () => {
-        const { meetingId } = await MeetingAPi.start(name);
-        dispatch(start({ name, meetingId }));
+        const { meetingId } = await MeetingAPi.start('');
+        dispatch(start({ name: '', meetingId }));
+        history.push(`/meeting/${meetingId}`);
+    };
+
+    const joinMeeting = () => {
         history.push(`/meeting/${meetingId}`);
     };
 
@@ -36,25 +45,35 @@ const HomePage: React.FC = () => {
             <Wrapper>
                 <Content>
                     <div className="flex justify-center">
-                        <div className="w-1/2">
+                        <div className="w-1/2 hidden md:block">
                             <img src={GroupVideoImage} alt="Group video" />
                         </div>
-                        <div className="flex flex-col items-center w-1/2 p-4">
-                            <h1 className="text-3xl text-center font-bold  text-green-500 mt-20 mb-4">
-                                Welcome to Meet X
-                            </h1>
-                            <h4 className="text-lg text-gray-500 mb-4">
-                                Connect wih your family and friends with our group video calls
-                            </h4>
-                            <Input
-                                size="medium"
-                                placeholder="Enter your name"
-                                className="name mb-4 "
-                                onChange={(event) => setName(event.target.value)}
-                            />
-                            <Button size="medium" onClick={startMeeting} disabled={!name}>
-                                Start Meeting
-                            </Button>
+                        <div className="flex flex-col items-center w-full md:w-1/2 p-4">
+                            <div className="meeting-action-container">
+                                <h1 className="text-3xl text-center font-bold  text-green-500 mt-20 mb-4">
+                                    Welcome to Meet X
+                                </h1>
+                                <h4 className="text-lg text-gray-500 mb-4">
+                                    Connect wih your family and friends with our group video calls
+                                </h4>
+                                <Input
+                                    size="medium"
+                                    placeholder="Enter meeting Id"
+                                    className="name mb-4 w-full"
+                                    onChange={(event) => setMeetingId(event.target.value)}
+                                />
+                                <Button
+                                    size="medium"
+                                    onClick={joinMeeting}
+                                    disabled={!meetingId}
+                                    className="w-full mb-4"
+                                >
+                                    Join meeting
+                                </Button>
+                                <Button size="medium" onClick={startMeeting} className="w-full">
+                                    Start a new meeting
+                                </Button>
+                            </div>
                         </div>
                     </div>
                 </Content>

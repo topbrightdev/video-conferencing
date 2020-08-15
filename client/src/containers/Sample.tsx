@@ -6,7 +6,7 @@ import { v4 as uuidV4 } from 'uuid';
 const meetingId = 'e4bd85a0-623b-4096-993b-2997aec423be';
 let meeting: Meeting | null = null;
 navigator.mediaDevices.getUserMedia({ video: true, audio: true }).then((stream) => {
-    meeting = new Meeting({ stream, meetingId });
+    meeting = new Meeting({ stream, meetingId, userId: '', name: '' });
 });
 
 const Sample: React.FC = () => {
