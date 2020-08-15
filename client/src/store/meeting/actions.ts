@@ -12,11 +12,19 @@ import {
     JoinedAction,
 } from './types';
 
-export const start = () => (dispatch: Dispatch<StartAction>) => {
+interface StartParam {
+    name: string;
+    meetingId: string;
+}
+export const start = ({ name, meetingId }: StartParam) => async (
+    dispatch: Dispatch<StartAction>,
+) => {
     dispatch({
         type: START,
-        payload: {},
+        payload: { name, meetingId },
     });
+    localStorage.setItem('name', name);
+    localStorage.setItem('meetingId', meetingId);
 };
 
 export const join = () => (dispatch: Dispatch<JoinAction>) => {

@@ -1,9 +1,12 @@
-import Connection from '../../lib/connection';
+import { Connection } from '../../lib/meeting';
 
 export interface MeetingState {
     stream?: MediaStream | null;
     connections: Connection[];
     userId?: string;
+    started: boolean;
+    meetingId: string;
+    name: string;
 }
 export const START = '@meeting/start';
 export const JOIN = '@meeting/join';
@@ -13,7 +16,10 @@ export const END = '@meeting/end';
 
 export interface StartAction {
     type: typeof START;
-    payload: {};
+    payload: {
+        name: string;
+        meetingId: string;
+    };
 }
 export interface JoinAction {
     type: typeof JOIN;
@@ -31,4 +37,9 @@ export interface EndAction {
     type: typeof END;
     payload: {};
 }
-export type MeetingAction = StartAction | JoinAction | JoinedAction | LeaveAction | EndAction;
+export type MeetingAction =
+    | StartAction
+    | JoinAction
+    | JoinedAction
+    | LeaveAction
+    | EndAction;

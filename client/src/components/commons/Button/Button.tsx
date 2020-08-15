@@ -21,6 +21,7 @@ const Button: React.FC<ButtonProps> = ({ size = 'medium', className, children, .
                     'px-2 py-1 text-base': size === 'small',
                     'px-3 py-2 text-lg': size === 'medium',
                     'px-4 py-2 text-xl': size === 'large',
+                    'opacity-50 cursor-not-allowed': props.disabled,
                 },
             )}
         >
