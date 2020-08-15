@@ -10,9 +10,11 @@ import {
     END,
     JOINED,
     JoinedAction,
+    NewConnectionAction,
+    NEW_CONNECTION,
 } from './types';
 import { MeetingDetail } from '../../types';
-import Meeting from '../../lib/meeting';
+import Meeting, { Connection } from '../../lib/meeting';
 
 interface StartParam {
     name: string;
@@ -29,10 +31,15 @@ export const start = ({ name, meetingId }: StartParam) => async (
     localStorage.setItem('meetingId', meetingId);
 };
 
-export const join = (meetingDetail: MeetingDetail) => async (dispatch: Dispatch<JoinAction>) => {
+export const join = (meetingDetail: MeetingDetail) => async (
+    dispatch: Dispatch<JoinAction | any>,
+) => {
     try {
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         const meeting = new Meeting({ meetingId: meetingDetail.id, stream });
+        meeting.on('connection', (connection: Connection) => {
+            dispatch(newConnection(connection));
+        });
         dispatch({
             type: JOIN,
             payload: { meetingDetail, meeting, stream },
@@ -41,6 +48,17 @@ export const join = (meetingDetail: MeetingDetail) => async (dispatch: Dispatch<
         console.log(error);
     }
 };
+export const newConnection = (connection: Connection) => async (
+    dispatch: Dispatch<NewConnectionAction>,
+) => {
+    dispatch({
+        type: NEW_CONNECTION,
+        payload: {
+            connection,
+        },
+    });
+};
+
 export const joined = () => (dispatch: Dispatch<JoinedAction>) => {
     dispatch({
         type: JOINED,

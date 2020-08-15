@@ -1,4 +1,13 @@
-import { MeetingState, MeetingAction, START, JOIN, JOINED, LEAVE, END } from './types';
+import {
+    MeetingState,
+    MeetingAction,
+    START,
+    JOIN,
+    JOINED,
+    LEAVE,
+    END,
+    NEW_CONNECTION,
+} from './types';
 
 const initialState: MeetingState = {
     stream: null,
@@ -29,6 +38,11 @@ export default function meetingReducer(state = initialState, action: MeetingActi
             };
         case JOINED:
             return { ...state };
+        case NEW_CONNECTION:
+            return {
+                ...state,
+                connections: [...state.connections, action.payload.connection],
+            };
         case LEAVE:
             return { ...state };
         case END:
