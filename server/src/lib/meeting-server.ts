@@ -2,7 +2,13 @@ import Websocket, { Data } from 'ws';
 import { Server, IncomingMessage } from 'http';
 import { v4 as uuidV4 } from 'uuid';
 
-const meetingMap = new Map<string, Array<MeetingUser>>();
+interface Meeting {
+    id: string;
+    hostId: string;
+    hostName: string;
+    meetingUsers: MeetingUser[];
+}
+const meetingMap = new Map<string, Meeting>();
 
 interface MeetingUser {
     socket: Websocket;
@@ -49,23 +55,23 @@ function getMeetingId(request: IncomingMessage) {
     const urlObj = new URL(url, `http://${host}`);
     return urlObj.searchParams.get('id');
 }
-
+function getMeetingUsers(meetingId: string): MeetingUser[] {
+    return meetingMap.get(meetingId)?.meetingUsers || [];
+}
 function getMeetingUser(meetingId: string, userId: string): MeetingUser | null {
-    const meetingUsers = meetingMap.get(meetingId) || [];
+    const meetingUsers = getMeetingUsers(meetingId);
     return meetingUsers.find((meetingUser) => meetingUser.userId === userId);
 }
 
-function addSocketToMeeting(meetingId: string, userId: string, socket: Websocket): void {
-    let meetingUsers = meetingMap.get(meetingId);
-    if (!meetingUsers) {
-        meetingUsers = [];
+function addUser(meetingId: string, userId: string, socket: Websocket): void {
+    if (meetingMap.has(meetingId)) {
+        const meetingUsers = getMeetingUsers(meetingId);
+        meetingUsers.push({ socket, userId, joined: true });
     }
-    meetingUsers.push({ socket, userId, joined: true });
-    meetingMap.set(meetingId, meetingUsers);
 }
 
 function broadcastUsers(meetingId: string, socket: Websocket, payload: MessagePayload) {
-    const meetingUsers = meetingMap.get(meetingId) || [];
+    const meetingUsers = getMeetingUsers(meetingId);
     for (let i = 0; i < meetingUsers.length; i++) {
         const meetingUser = meetingUsers[i];
         if (meetingUser.socket !== socket) {
@@ -74,7 +80,7 @@ function broadcastUsers(meetingId: string, socket: Websocket, payload: MessagePa
     }
 }
 function terminateMeeting(meetingId: string) {
-    const meetingUsers = meetingMap.get(meetingId) || [];
+    const meetingUsers = getMeetingUsers(meetingId);
     for (let i = 0; i < meetingUsers.length; i++) {
         const meetingUser = meetingUsers[i];
         meetingUser.socket.terminate();
@@ -86,7 +92,7 @@ function joinMeeting(meetingId: string, socket: Websocket, payload: MessagePaylo
     const userId = uuidV4();
     console.log('User joined meeting', userId);
 
-    addSocketToMeeting(meetingId, userId, socket);
+    addUser(meetingId, userId, socket);
 
     sendMessage(socket, {
         type: 'joined-meeting',
@@ -257,4 +263,15 @@ export function initMeetingServer(server: Server): void {
         const meetingId = getMeetingId(request);
         listenMessage(meetingId, socket);
     });
+}
+interface StartMeetingParams {
+    name: string;
+    userId: string;
+}
+export async function startMeeting({ name, userId }: StartMeetingParams): Promise<string> {
+    const meetingId = uuidV4();
+    const meeting: Meeting = { id: meetingId, hostId: userId, hostName: name, meetingUsers: [] };
+    meetingMap.set(meetingId, meeting);
+    console.log(meetingMap);
+    return meetingId;
 }
