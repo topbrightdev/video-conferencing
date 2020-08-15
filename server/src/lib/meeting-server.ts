@@ -14,6 +14,7 @@ interface MeetingUser {
     socket: Websocket;
     userId: string;
     joined: boolean;
+    name: string;
 }
 
 interface MessagePayload {
@@ -62,11 +63,20 @@ function getMeetingUser(meetingId: string, userId: string): MeetingUser | null {
     const meetingUsers = getMeetingUsers(meetingId);
     return meetingUsers.find((meetingUser) => meetingUser.userId === userId);
 }
-
-function addUser(meetingId: string, userId: string, socket: Websocket): void {
+interface AddUserOptions {
+    meetingId: string;
+    userId: string;
+    name: string;
+}
+function addUser(socket: Websocket, { meetingId, userId, name }: AddUserOptions): void {
     if (meetingMap.has(meetingId)) {
         const meetingUsers = getMeetingUsers(meetingId);
-        meetingUsers.push({ socket, userId, joined: true });
+        const meetingUser = getMeetingUser(meetingId, userId);
+        if (meetingUser) {
+            meetingUser.socket = socket;
+        } else {
+            meetingUsers.push({ socket, userId, joined: true, name });
+        }
     }
 }
 
@@ -89,10 +99,10 @@ function terminateMeeting(meetingId: string) {
 }
 
 function joinMeeting(meetingId: string, socket: Websocket, payload: MessagePayload) {
-    const userId = uuidV4();
+    const { userId, name } = payload.data;
     console.log('User joined meeting', userId);
 
-    addUser(meetingId, userId, socket);
+    addUser(socket, { meetingId, userId, name });
 
     sendMessage(socket, {
         type: 'joined-meeting',
@@ -105,22 +115,25 @@ function joinMeeting(meetingId: string, socket: Websocket, payload: MessagePaylo
     broadcastUsers(meetingId, socket, {
         type: 'user-joined',
         data: {
-            userId: userId,
+            userId,
+            name,
         },
     });
 }
 interface ConnectWithOtherUserPayloadData {
     userId: string;
     otherUserId: string;
+    name: string;
 }
 function connectionRequest(meetingId: string, socket: Websocket, payload: MessagePayload) {
-    const { userId, otherUserId } = payload.data as ConnectWithOtherUserPayloadData;
+    const { userId, otherUserId, name } = payload.data as ConnectWithOtherUserPayloadData;
     const otherUser = getMeetingUser(meetingId, otherUserId);
     if (otherUser?.socket) {
         sendMessage(otherUser?.socket, {
             type: 'incoming-connection-request',
             data: {
                 userId,
+                name,
             },
         });
     }
