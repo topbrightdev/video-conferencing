@@ -268,10 +268,17 @@ interface StartMeetingParams {
     name: string;
     userId: string;
 }
-export async function startMeeting({ name, userId }: StartMeetingParams): Promise<string> {
+export function startMeeting({ name, userId }: StartMeetingParams): string {
     const meetingId = uuidV4();
     const meeting: Meeting = { id: meetingId, hostId: userId, hostName: name, meetingUsers: [] };
     meetingMap.set(meetingId, meeting);
     console.log(meetingMap);
     return meetingId;
+}
+
+export function checkMeetingExists(meetingId: string): Omit<Meeting, 'meetingUsers'> {
+    if (!meetingMap.has(meetingId)) {
+        throw new Error('Meeting not found');
+    }
+    return meetingMap.get(meetingId) as Omit<Meeting, 'meetingUsers'>;
 }
