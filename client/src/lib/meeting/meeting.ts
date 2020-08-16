@@ -302,13 +302,16 @@ export default class Meeting extends EventEmitter {
             },
         });
     }
-
+    stopStream(){
+        this.stream?.getTracks().forEach((track) => track.stop());
+    }
     destroy() {
         this.transport?.destroy();
         this.transport = null;
         this.connections.forEach((connection) => {
             connection.close();
         });
+        this.stopStream();
         this.connections = [];
         this.connected = false;
         this.stream = null;
