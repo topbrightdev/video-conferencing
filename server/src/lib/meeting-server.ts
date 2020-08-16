@@ -31,6 +31,8 @@ interface MessagePayload {
         | 'user-left'
         | 'meeting-ended'
         | 'icecandidate'
+        | 'video-toggle'
+        | 'audio-toggle'
         | 'unknown';
     data?: any;
 }
@@ -221,12 +223,21 @@ function endMeeting(meetingId: string, socket: Websocket, payload: MessagePayloa
     broadcastUsers(meetingId, socket, {
         type: 'meeting-ended',
         data: {
-            userId: userId,
+            userId,
         },
     });
     terminateMeeting(meetingId);
 }
-
+function forwardEvent(meetingId: string, socket: Websocket, payload: MessagePayload) {
+    const { userId } = payload.data as MeetingEndedPayload;
+    broadcastUsers(meetingId, socket, {
+        type: payload.type,
+        data: {
+            userId,
+            ...payload.data,
+        },
+    });
+}
 function handleMessage(meetingId: string, socket: Websocket, message: Data) {
     if (typeof message === 'string') {
         const payload = parseMessage(message);
@@ -251,6 +262,10 @@ function handleMessage(meetingId: string, socket: Websocket, message: Data) {
                 break;
             case 'end-meeting':
                 endMeeting(meetingId, socket, payload);
+                break;
+            case 'video-toggle':
+            case 'audio-toggle':
+                forwardEvent(meetingId, socket, payload);
                 break;
             case 'unknown':
                 break;
