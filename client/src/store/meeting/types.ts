@@ -10,6 +10,8 @@ export interface MeetingState {
     name: string;
     meeting: Meeting | null;
     meetingDetail: MeetingDetail | null;
+    audioEnabled: boolean;
+    videoEnabled: boolean;
 }
 export const START = '@meeting/start';
 export const JOIN = '@meeting/join';
@@ -19,6 +21,9 @@ export const LEAVE = '@meeting/leave';
 export const USER_LEFT = '@meeting/user-left';
 export const END = '@meeting/end';
 export const MEETING_ENDED = '@meeting/meeting-ended';
+export const VIDEO_TOGGLE = '@meeting/video-toggle';
+export const AUDIO_TOGGLE = '@meeting/audio-toggle';
+export const CONNECTION_SETTING_CHANGE = '@meeting/connection-setting-change';
 
 export interface StartAction {
     type: typeof START;
@@ -60,6 +65,23 @@ export interface EndAction {
 export interface MeetingEndedAction {
     type: typeof MEETING_ENDED;
 }
+
+export interface VideoToggleAction {
+    type: typeof VIDEO_TOGGLE;
+    payload: {
+        videoEnabled: boolean;
+    };
+}
+export interface AudioToggleAction {
+    type: typeof AUDIO_TOGGLE;
+    payload: {
+        audioEnabled: boolean;
+    };
+}
+
+export interface ConnectionSettingChangeAction {
+    type: typeof CONNECTION_SETTING_CHANGE;
+}
 export type MeetingAction =
     | StartAction
     | JoinAction
@@ -68,4 +90,7 @@ export type MeetingAction =
     | LeaveAction
     | UserLeftAction
     | EndAction
-    | MeetingEndedAction;
+    | MeetingEndedAction
+    | VideoToggleAction
+    | AudioToggleAction
+    | ConnectionSettingChangeAction;

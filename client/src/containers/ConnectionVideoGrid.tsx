@@ -1,6 +1,5 @@
 import React from 'react';
 import { Connection } from '../lib/meeting';
-import VideoElement from '../components/VideoElement';
 import styled from 'styled-components';
 import ConnectionVideoItem from '../components/ConnectionVideoItem';
 
@@ -11,21 +10,6 @@ const ConnectionVideoGrid = styled.div`
         padding: 0.5rem;
         justify-self: center;
         align-self: center;
-        .video-container {
-            position: relative;
-            .name {
-                position: absolute;
-                padding: 0.25rem 0.5rem;
-                bottom: 0.5rem;
-                left: 0.5rem;
-                background-color: rgba(0, 0, 0, 0.5);
-            }
-        }
-    }
-    & video {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
     }
     &.span-1 {
         grid-template-columns: [col-1] 100%;
@@ -83,23 +67,33 @@ const ConnectionVideoGrid = styled.div`
 `;
 interface RemoteConnectionsProps {
     connections: Connection[];
-    localStream: MediaStream;
-    name: string;
+    local: {
+        stream: MediaStream;
+        name: string;
+        audioEnabled: boolean;
+        videoEnabled: boolean;
+    };
 }
-const RemoteConnections: React.FC<RemoteConnectionsProps> = ({
-    connections,
-    localStream,
-    name,
-}) => {
+const RemoteConnections: React.FC<RemoteConnectionsProps> = ({ connections, local }) => {
     return (
         <ConnectionVideoGrid className={`span-${connections.length + 1}`}>
-            <ConnectionVideoItem className={`item item-1`} stream={localStream} name={name} />
+            <ConnectionVideoItem
+                className={`item item-1`}
+                stream={local.stream}
+                name={local.name}
+                audioEnabled={local.audioEnabled}
+                videoEnabled={local.videoEnabled}
+                key={'local-connection'}
+            />
             {connections.map((connection, index) => {
                 return (
                     <ConnectionVideoItem
                         className={`item item-${index + 2}`}
                         stream={connection.remoteStream}
                         name={connection.name}
+                        audioEnabled={connection.audioEnabled}
+                        videoEnabled={connection.videoEnabled}
+                        key={connection.userId}
                     />
                 );
             })}

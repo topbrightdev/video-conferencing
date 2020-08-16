@@ -94,8 +94,14 @@ export default class Rtp extends EventEmitter {
             );
         }
     }
-    
+
     async setIceCandidate(candidate: any) {
         await this.rtcPeerConnection?.addIceCandidate(candidate);
+    }
+    close() {
+        this.rtcPeerConnection?.close();
+        this.remoteStream = null;
+        this.localStream = null;
+        this.rtcPeerConnection = null;
     }
 }

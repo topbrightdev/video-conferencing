@@ -70,6 +70,7 @@ export default class Transport extends EventEmitter {
     }
 
     destroy() {
+        this.socket?.close();
         this.removeEvents();
     }
 }

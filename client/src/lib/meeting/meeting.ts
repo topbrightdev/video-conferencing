@@ -13,6 +13,8 @@ import {
     UserLeftData,
     MeetingEndedData,
     JoinedMeetingData,
+    VideoToggleData,
+    AudioToggleData,
 } from './types';
 
 const url = 'ws://localhost:8081/websocket/meeting';
@@ -108,6 +110,12 @@ export default class Meeting extends EventEmitter {
                 break;
             case 'icecandidate':
                 this.setIceCandidate(payload.data);
+                break;
+            case 'video-toggle':
+                this.listenVideoToggle(payload.data);
+                break;
+            case 'audio-toggle':
+                this.listenAudioToggle(payload.data);
                 break;
             default:
                 break;
@@ -216,6 +224,7 @@ export default class Meeting extends EventEmitter {
     userLeft(data: UserLeftData) {
         const connection = this.getConnection(data.userId);
         this.emit('user-left', connection);
+        connection?.close();
         this.connections = this.connections.filter((conn) => conn.userId !== data.userId);
     }
 
@@ -236,8 +245,49 @@ export default class Meeting extends EventEmitter {
         this.destroy();
     }
 
+    toggleVideo(): boolean {
+        const videoTrack = this.stream?.getVideoTracks()[0];
+        if (videoTrack) {
+            const videoEnabled = (videoTrack.enabled = !videoTrack.enabled);
+
+            this.sendMessage('video-toggle', {
+                userId: this.userId,
+                videoEnabled,
+            });
+            return videoEnabled;
+        }
+        return false;
+    }
+    toggleAudio(): boolean {
+        const audioTrack = this.stream?.getAudioTracks()[0];
+        if (audioTrack) {
+            const audioEnabled = (audioTrack.enabled = !audioTrack.enabled);
+            this.sendMessage('audio-toggle', {
+                userId: this.userId,
+                audioEnabled,
+            });
+            return audioEnabled;
+        }
+
+        return false;
+    }
+    listenVideoToggle(data: VideoToggleData) {
+        const connection = this.getConnection(data.userId);
+        connection?.toggleVideo(data.videoEnabled);
+        this.emit('connection-setting-changed');
+    }
+    listenAudioToggle(data: AudioToggleData) {
+        const connection = this.getConnection(data.userId);
+        connection?.toggleAudio(data.audioEnabled);
+        this.emit('connection-setting-changed');
+    }
+
     destroy() {
+        this.transport?.destroy();
         this.transport = null;
+        this.connections.forEach((connection) => {
+            connection.close();
+        });
         this.connections = [];
         this.connected = false;
         this.stream = null;

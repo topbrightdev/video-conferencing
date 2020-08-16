@@ -19,13 +19,14 @@ const VideoElement: React.FC<VideoElementProps> = ({ stream, ...props }) => {
     };
 
     const attachStream = () => {
-        if(ref.current){
+        if (ref.current) {
             ref.current.srcObject = stream;
         }
     };
     useEffect(() => {
         initElement();
         attachStream();
+        // eslint-disable-next-line
     }, []);
     return <video {...props} ref={ref} autoPlay playsInline />;
 };

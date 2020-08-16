@@ -16,6 +16,12 @@ import {
     USER_LEFT,
     MEETING_ENDED,
     MeetingAction,
+    AudioToggleAction,
+    VideoToggleAction,
+    VIDEO_TOGGLE,
+    AUDIO_TOGGLE,
+    ConnectionSettingChangeAction,
+    CONNECTION_SETTING_CHANGE,
 } from './types';
 import { MeetingDetail } from '../../types';
 import Meeting, { Connection } from '../../lib/meeting';
@@ -102,5 +108,41 @@ export const end = () => (dispatch: Dispatch<EndAction>) => {
 export const meetingEnded = () => (dispatch: Dispatch<MeetingAction>) => {
     dispatch({
         type: MEETING_ENDED,
+    });
+};
+
+export const toggleVideo = () => (
+    dispatch: Dispatch<VideoToggleAction>,
+    getState: () => RootState,
+) => {
+    const { meeting } = getState().meeting;
+    const videoEnabled = !!meeting?.toggleVideo();
+    dispatch({
+        type: VIDEO_TOGGLE,
+        payload: {
+            videoEnabled,
+        },
+    });
+};
+export const toggleAudio = () => (
+    dispatch: Dispatch<AudioToggleAction>,
+    getState: () => RootState,
+) => {
+    const { meeting } = getState().meeting;
+    const audioEnabled = !!meeting?.toggleAudio();
+
+    dispatch({
+        type: AUDIO_TOGGLE,
+        payload: {
+            audioEnabled,
+        },
+    });
+};
+
+export const connectionSettingChange = () => (
+    dispatch: Dispatch<ConnectionSettingChangeAction>,
+) => {
+    dispatch({
+        type: CONNECTION_SETTING_CHANGE,
     });
 };

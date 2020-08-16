@@ -3,11 +3,9 @@ import { useParams, useHistory } from 'react-router-dom';
 import * as MeetingApi from '../lib/meeting-api';
 import Layout, { Header, Footer } from '../components/Layout';
 import Content from '../components/Layout/Content';
-import { loadUserId, loadUserName } from '../lib/user';
-import { useDispatch, useSelector } from 'react-redux';
+import { loadUserName } from '../lib/user';
+import { useDispatch } from 'react-redux';
 import { join } from '../store/meeting/actions';
-import { RootState } from '../store/reducer';
-import { MeetingState } from '../store/meeting/types';
 import MeetingRoom from '../containers/MeetingRoom';
 import styled from 'styled-components';
 import Input from '../components/commons/Input';
@@ -27,7 +25,6 @@ const MeetingPage: React.FC = () => {
     const [meetingDetail, setMeetingDetail] = useState<MeetingDetail | null>(null);
     const [askName, setAskName] = useState(true);
     const [name, setName] = useState(loadUserName());
-    const userId = loadUserId();
 
     const validateMeeting = async () => {
         try {
@@ -51,6 +48,7 @@ const MeetingPage: React.FC = () => {
 
     useEffect(() => {
         validateMeeting();
+        // eslint-disable-next-line
     }, []);
 
     if (askName) {

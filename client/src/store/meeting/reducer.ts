@@ -9,6 +9,9 @@ import {
     NEW_CONNECTION,
     USER_LEFT,
     MEETING_ENDED,
+    VIDEO_TOGGLE,
+    AUDIO_TOGGLE,
+    CONNECTION_SETTING_CHANGE,
 } from './types';
 
 const initialState: MeetingState = {
@@ -20,6 +23,8 @@ const initialState: MeetingState = {
     name: '',
     meeting: null,
     meetingDetail: null,
+    videoEnabled: true,
+    audioEnabled: true,
 };
 
 export default function meetingReducer(state = initialState, action: MeetingAction): MeetingState {
@@ -51,6 +56,12 @@ export default function meetingReducer(state = initialState, action: MeetingActi
         case END:
         case MEETING_ENDED:
             return { ...state, ...initialState, connections: [] };
+        case VIDEO_TOGGLE:
+            return { ...state, videoEnabled: action.payload.videoEnabled };
+        case AUDIO_TOGGLE:
+            return { ...state, audioEnabled: action.payload.audioEnabled };
+        case CONNECTION_SETTING_CHANGE:
+            return { ...state, connections: [...state.connections] };
         default:
             return { ...state };
     }

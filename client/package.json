@@ -3,6 +3,8 @@
     "version": "0.1.0",
     "private": true,
     "dependencies": {
+        "@material-ui/core": "^4.11.0",
+        "@material-ui/icons": "^4.9.1",
         "axios": "^0.19.2",
         "classnames": "^2.2.6",
         "events": "^3.2.0",
