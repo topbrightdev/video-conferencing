@@ -12,9 +12,14 @@ import {
     JoinedAction,
     NewConnectionAction,
     NEW_CONNECTION,
+    UserLeftAction,
+    USER_LEFT,
+    MEETING_ENDED,
+    MeetingAction,
 } from './types';
 import { MeetingDetail } from '../../types';
 import Meeting, { Connection } from '../../lib/meeting';
+import { RootState } from '../reducer';
 
 interface StartParam {
     name: string;
@@ -70,12 +75,32 @@ export const joined = () => (dispatch: Dispatch<JoinedAction>) => {
 export const leave = () => (dispatch: Dispatch<LeaveAction>) => {
     dispatch({
         type: LEAVE,
-        payload: {},
     });
 };
+
+export const userLeft = (connection: Connection) => (
+    dispatch: Dispatch<UserLeftAction>,
+    getState: () => RootState,
+) => {
+    const { connections } = getState().meeting;
+    const index = connections.findIndex((conn) => conn.userId === connection.userId);
+    connections.splice(index, 1);
+    dispatch({
+        type: USER_LEFT,
+        payload: {
+            connections: [...connections],
+        },
+    });
+};
+
 export const end = () => (dispatch: Dispatch<EndAction>) => {
     dispatch({
         type: END,
-        payload: {},
+    });
+};
+
+export const meetingEnded = () => (dispatch: Dispatch<MeetingAction>) => {
+    dispatch({
+        type: MEETING_ENDED,
     });
 };

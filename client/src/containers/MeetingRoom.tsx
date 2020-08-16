@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react';
-import { useSelector } from 'react-redux';
+import React, { useEffect } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
 import Button from '../components/commons/Button';
 import styled from 'styled-components';
-import VideoElement from '../components/VideoElement';
-import RemoteConnections from '../containers/RemoteConnections';
+import ConnectionVideoGrid from './ConnectionVideoGrid';
 import { RootState } from '../store/reducer';
 import { MeetingState } from '../store/meeting/types';
-import { loadUserId } from '../lib/user';
+import { loadUserId, loadUserName } from '../lib/user';
+import { leave, end, userLeft } from '../store/meeting/actions';
+import { Connection } from '../lib/meeting';
 
 const Wrapper = styled.div`
     background-color: #000;
@@ -29,13 +30,34 @@ const Wrapper = styled.div`
 `;
 const MeetingRoom = () => {
     const history = useHistory();
+    const dispatch = useDispatch();
     const { id } = useParams();
     const { meeting, meetingDetail, stream, connections } = useSelector<RootState, MeetingState>(
         (state) => state.meeting,
     );
     const userId = loadUserId();
+    const name = loadUserName();
     const isHost = userId === meetingDetail?.hostId;
 
+    const handleLeaveClick = () => {
+        meeting?.leave();
+        dispatch(leave());
+        history.replace('/');
+    };
+    const handleEndClick = () => {
+        meeting?.end();
+        dispatch(end());
+        history.replace('/');
+    };
+    useEffect(() => {
+        meeting?.on('user-left', (connection: Connection) => {
+            dispatch(userLeft(connection));
+        });
+        meeting?.on('ended', () => {
+            history.replace('/');
+            dispatch(end());
+        });
+    });
     return (
         <Wrapper className="w-full h-screen">
             <div>
@@ -43,13 +65,13 @@ const MeetingRoom = () => {
                     <Button
                         size="small"
                         color="secondary"
-                        onClick={() => meeting?.leave()}
+                        onClick={handleLeaveClick}
                         className="mr-4"
                     >
                         Leave
                     </Button>
                     {isHost && (
-                        <Button size="small" color="danger" onClick={() => meeting?.end()}>
+                        <Button size="small" color="danger" onClick={handleEndClick}>
                             End
                         </Button>
                     )}
@@ -58,11 +80,8 @@ const MeetingRoom = () => {
             <div className="bg-yellow-500 text-center text-sm p-1">Meeting Id: {id}</div>
 
             {stream && (
-                <div className="self-view">
-                    <VideoElement stream={stream} className="w-full" />
-                </div>
+                <ConnectionVideoGrid connections={connections} localStream={stream} name={name} />
             )}
-            <RemoteConnections connections={connections} />
         </Wrapper>
     );
 };

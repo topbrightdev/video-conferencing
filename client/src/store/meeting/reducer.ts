@@ -7,6 +7,8 @@ import {
     LEAVE,
     END,
     NEW_CONNECTION,
+    USER_LEFT,
+    MEETING_ENDED,
 } from './types';
 
 const initialState: MeetingState = {
@@ -43,10 +45,12 @@ export default function meetingReducer(state = initialState, action: MeetingActi
                 ...state,
                 connections: [...state.connections, action.payload.connection],
             };
+        case USER_LEFT:
+            return { ...state, connections: [...action.payload.connections] };
         case LEAVE:
-            return { ...state };
         case END:
-            return { ...state };
+        case MEETING_ENDED:
+            return { ...state, ...initialState, connections: [] };
         default:
             return { ...state };
     }

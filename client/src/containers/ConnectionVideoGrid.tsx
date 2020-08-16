@@ -2,8 +2,9 @@ import React from 'react';
 import { Connection } from '../lib/meeting';
 import VideoElement from '../components/VideoElement';
 import styled from 'styled-components';
+import ConnectionVideoItem from '../components/ConnectionVideoItem';
 
-const RemoteConnectionGrid = styled.div`
+const ConnectionVideoGrid = styled.div`
     display: grid;
     .item {
         position: relative;
@@ -82,24 +83,27 @@ const RemoteConnectionGrid = styled.div`
 `;
 interface RemoteConnectionsProps {
     connections: Connection[];
+    localStream: MediaStream;
+    name: string;
 }
-const RemoteConnections: React.FC<RemoteConnectionsProps> = ({ connections }) => {
+const RemoteConnections: React.FC<RemoteConnectionsProps> = ({
+    connections,
+    localStream,
+    name,
+}) => {
     return (
-        <RemoteConnectionGrid className={`span-${connections.length}`}>
+        <ConnectionVideoGrid className={`span-${connections.length + 1}`}>
+            <ConnectionVideoItem className={`item item-1`} stream={localStream} name={name} />
             {connections.map((connection, index) => {
-                console.log(connections);
                 return (
-                    <div className={`item item-${index + 1}`}>
-                        <div className="video-container">
-                            {connection.remoteStream && (
-                                <VideoElement stream={connection.remoteStream} className="w-full" />
-                            )}
-                            <div className="name text-white text-sm">{connection.name}</div>
-                        </div>
-                    </div>
+                    <ConnectionVideoItem
+                        className={`item item-${index + 2}`}
+                        stream={connection.remoteStream}
+                        name={connection.name}
+                    />
                 );
             })}
-        </RemoteConnectionGrid>
+        </ConnectionVideoGrid>
     );
 };
 

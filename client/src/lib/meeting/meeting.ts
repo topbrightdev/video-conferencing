@@ -214,6 +214,8 @@ export default class Meeting extends EventEmitter {
     }
 
     userLeft(data: UserLeftData) {
+        const connection = this.getConnection(data.userId);
+        this.emit('user-left', connection);
         this.connections = this.connections.filter((conn) => conn.userId !== data.userId);
     }
 

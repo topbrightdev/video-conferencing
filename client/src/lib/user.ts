@@ -7,7 +7,5 @@ export function loadUserId(): string {
 }
 
 export function loadUserName(): string {
-    const userId = localStorage.getItem('userId') || uuidV4();
-    localStorage.setItem('userId', userId);
-    return userId;
+    return localStorage.getItem('name') || '';
 }
