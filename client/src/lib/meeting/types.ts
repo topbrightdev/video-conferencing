@@ -9,6 +9,7 @@ export type IncomingMessageType =
     | 'user-left'
     | 'video-toggle'
     | 'audio-toggle'
+    | 'message'
     | 'unknown';
 export type OutgoingMessageType =
     | 'join-meeting'
@@ -20,6 +21,7 @@ export type OutgoingMessageType =
     | 'end-meeting'
     | 'video-toggle'
     | 'audio-toggle'
+    | 'message'
     | 'unknown';
 export type MessageType = IncomingMessageType | OutgoingMessageType;
 
@@ -70,4 +72,14 @@ export interface VideoToggleData {
 export interface AudioToggleData {
     userId: string;
     audioEnabled: boolean;
+}
+
+export interface MessageFormat {
+    userId: string;
+    text: string;
+}
+
+export interface MessageData {
+    userId: string;
+    message: MessageFormat;
 }

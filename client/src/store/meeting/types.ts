@@ -1,5 +1,6 @@
 import Meeting, { Connection } from '../../lib/meeting';
 import { MeetingDetail } from '../../types';
+import { MessageFormat } from '../../lib/meeting/types';
 
 export interface MeetingState {
     stream?: MediaStream | null;
@@ -12,6 +13,7 @@ export interface MeetingState {
     meetingDetail: MeetingDetail | null;
     audioEnabled: boolean;
     videoEnabled: boolean;
+    messages: MessageFormat[];
 }
 export const START = '@meeting/start';
 export const JOIN = '@meeting/join';
@@ -24,6 +26,8 @@ export const MEETING_ENDED = '@meeting/meeting-ended';
 export const VIDEO_TOGGLE = '@meeting/video-toggle';
 export const AUDIO_TOGGLE = '@meeting/audio-toggle';
 export const CONNECTION_SETTING_CHANGE = '@meeting/connection-setting-change';
+export const SEND_MESSAGE = '@meeting/send-message';
+export const RECIEVE_MESSAGE = '@meeting/recieve-message';
 
 export interface StartAction {
     type: typeof START;
@@ -38,6 +42,8 @@ export interface JoinAction {
         meetingDetail: MeetingDetail;
         stream: MediaStream;
         meeting: Meeting;
+        userId: string;
+        name: string;
     };
 }
 export interface JoinedAction {
@@ -82,6 +88,19 @@ export interface AudioToggleAction {
 export interface ConnectionSettingChangeAction {
     type: typeof CONNECTION_SETTING_CHANGE;
 }
+
+export interface SendMessageAction {
+    type: typeof SEND_MESSAGE;
+    payload: {
+        message: MessageFormat;
+    };
+}
+export interface RecieveMessageAction {
+    type: typeof RECIEVE_MESSAGE;
+    payload: {
+        message: MessageFormat;
+    };
+}
 export type MeetingAction =
     | StartAction
     | JoinAction
@@ -93,4 +112,6 @@ export type MeetingAction =
     | MeetingEndedAction
     | VideoToggleAction
     | AudioToggleAction
-    | ConnectionSettingChangeAction;
+    | ConnectionSettingChangeAction
+    | SendMessageAction
+    | RecieveMessageAction;

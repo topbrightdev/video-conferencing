@@ -41,7 +41,7 @@ const MeetingPage: React.FC = () => {
         if (meetingDetail) {
             localStorage.setItem('name', name);
             setAskName(false);
-            dispatch(join(meetingDetail));
+            dispatch(join(meetingDetail, name));
             console.log('joined Meeeting');
         }
     };

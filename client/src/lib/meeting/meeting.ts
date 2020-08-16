@@ -15,6 +15,8 @@ import {
     JoinedMeetingData,
     VideoToggleData,
     AudioToggleData,
+    MessageFormat,
+    MessageData,
 } from './types';
 
 const url = 'ws://localhost:8081/websocket/meeting';
@@ -34,6 +36,7 @@ export default class Meeting extends EventEmitter {
     stream: MediaStream | null = null;
     userId: string | null = null;
     name: string = '';
+    messages: MessageFormat[] = [];
 
     constructor(options: MeetingOptions) {
         super();
@@ -116,6 +119,9 @@ export default class Meeting extends EventEmitter {
                 break;
             case 'audio-toggle':
                 this.listenAudioToggle(payload.data);
+                break;
+            case 'message':
+                this.handleUserMessage(payload.data);
                 break;
             default:
                 break;
@@ -280,6 +286,21 @@ export default class Meeting extends EventEmitter {
         const connection = this.getConnection(data.userId);
         connection?.toggleAudio(data.audioEnabled);
         this.emit('connection-setting-changed');
+    }
+
+    handleUserMessage(data: MessageData) {
+        this.messages.push(data.message);
+        this.emit('message', data.message);
+    }
+
+    sendUserMessage(text: string) {
+        this.sendMessage('message', {
+            userId: this.userId,
+            message: {
+                userId: this.userId,
+                text,
+            },
+        });
     }
 
     destroy() {

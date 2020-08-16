@@ -33,6 +33,7 @@ interface MessagePayload {
         | 'icecandidate'
         | 'video-toggle'
         | 'audio-toggle'
+        | 'message'
         | 'unknown';
     data?: any;
 }
@@ -265,6 +266,7 @@ function handleMessage(meetingId: string, socket: Websocket, message: Data) {
                 break;
             case 'video-toggle':
             case 'audio-toggle':
+            case 'message':
                 forwardEvent(meetingId, socket, payload);
                 break;
             case 'unknown':

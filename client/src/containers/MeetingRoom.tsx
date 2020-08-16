@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
 import Button from '../components/commons/Button';
@@ -14,12 +14,16 @@ import {
     toggleAudio,
     toggleVideo,
     connectionSettingChange,
+    receivedMessage,
 } from '../store/meeting/actions';
 import { Connection } from '../lib/meeting';
 import VideocamIcon from '@material-ui/icons/Videocam';
 import VideocamOffIcon from '@material-ui/icons/VideocamOff';
 import MicIcon from '@material-ui/icons/Mic';
 import MicOffIcon from '@material-ui/icons/MicOff';
+import ChatIcon from '@material-ui/icons/Chat';
+import ChatRoom from './ChatRoom';
+import { MessageFormat } from '../lib/meeting/types';
 
 const Wrapper = styled.div`
     background-color: #000;
@@ -50,6 +54,7 @@ const MeetingRoom = () => {
     const userId = loadUserId();
     const name = loadUserName();
     const isHost = userId === meetingDetail?.hostId;
+    const [isChatOpen, setChatOpen] = useState(false);
 
     const handleLeaveClick = () => {
         meeting?.leave();
@@ -77,15 +82,21 @@ const MeetingRoom = () => {
     const handleConnectionSettingChange = () => {
         dispatch(connectionSettingChange());
     };
+    const handleIncomingMessage = (message: MessageFormat) => {
+        dispatch(receivedMessage(message));
+    };
+    
     useEffect(() => {
         meeting?.on('user-left', handleUserLeft);
         meeting?.on('ended', handleEndEvent);
         meeting?.on('connection-setting-changed', handleConnectionSettingChange);
+        meeting?.on('message', handleIncomingMessage);
 
         return () => {
             meeting?.removeListener('user-left', handleUserLeft);
             meeting?.removeListener('ended', handleEndEvent);
             meeting?.removeListener('connection-setting-changed', handleConnectionSettingChange);
+            meeting?.removeListener('message', handleIncomingMessage);
         };
     });
     return (
@@ -110,6 +121,14 @@ const MeetingRoom = () => {
                     </Button>
                     <Button
                         size="small"
+                        color={isChatOpen ? 'secondary' : 'primary'}
+                        className="mr-4"
+                        onClick={() => setChatOpen(true)}
+                    >
+                        <ChatIcon />
+                    </Button>
+                    <Button
+                        size="small"
                         color="secondary"
                         onClick={handleLeaveClick}
                         className="mr-4"
@@ -131,6 +150,7 @@ const MeetingRoom = () => {
                     local={{ stream, name, audioEnabled, videoEnabled }}
                 />
             )}
+            <ChatRoom visible={isChatOpen} onClose={() => setChatOpen(false)} />
         </Wrapper>
     );
 };

@@ -22,10 +22,16 @@ import {
     AUDIO_TOGGLE,
     ConnectionSettingChangeAction,
     CONNECTION_SETTING_CHANGE,
+    SEND_MESSAGE,
+    SendMessageAction,
+    RecieveMessageAction,
+    RECIEVE_MESSAGE,
 } from './types';
 import { MeetingDetail } from '../../types';
 import Meeting, { Connection } from '../../lib/meeting';
 import { RootState } from '../reducer';
+import { MessageFormat } from '../../lib/meeting/types';
+import { loadUserId } from '../../lib/user';
 
 interface StartParam {
     name: string;
@@ -42,12 +48,11 @@ export const start = ({ name, meetingId }: StartParam) => async (
     localStorage.setItem('meetingId', meetingId);
 };
 
-export const join = (meetingDetail: MeetingDetail) => async (
+export const join = (meetingDetail: MeetingDetail, name: string) => async (
     dispatch: Dispatch<JoinAction | any>,
 ) => {
     try {
-        const name = localStorage.getItem('name') || '';
-        const userId = localStorage.getItem('userId') || '';
+        const userId = loadUserId();
         const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
         const meeting = new Meeting({ meetingId: meetingDetail.id, stream, name, userId });
         meeting.on('connection', (connection: Connection) => {
@@ -55,7 +60,7 @@ export const join = (meetingDetail: MeetingDetail) => async (
         });
         dispatch({
             type: JOIN,
-            payload: { meetingDetail, meeting, stream },
+            payload: { meetingDetail, meeting, stream, userId, name },
         });
     } catch (error) {
         console.log(error);
@@ -144,5 +149,33 @@ export const connectionSettingChange = () => (
 ) => {
     dispatch({
         type: CONNECTION_SETTING_CHANGE,
+    });
+};
+
+export const sendMessage = (text: string) => (
+    dispatch: Dispatch<SendMessageAction>,
+    getState: () => RootState,
+) => {
+    const { userId, meeting } = getState().meeting;
+    if (userId && meeting) {
+        const message: MessageFormat = { text, userId };
+        meeting.sendUserMessage(text);
+        dispatch({
+            type: SEND_MESSAGE,
+            payload: {
+                message,
+            },
+        });
+    }
+};
+
+export const receivedMessage = (message: MessageFormat) => (
+    dispatch: Dispatch<RecieveMessageAction>,
+) => {
+    dispatch({
+        type: RECIEVE_MESSAGE,
+        payload: {
+            message,
+        },
     });
 };

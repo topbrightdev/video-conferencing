@@ -12,6 +12,8 @@ import {
     VIDEO_TOGGLE,
     AUDIO_TOGGLE,
     CONNECTION_SETTING_CHANGE,
+    SEND_MESSAGE,
+    RECIEVE_MESSAGE,
 } from './types';
 
 const initialState: MeetingState = {
@@ -25,6 +27,7 @@ const initialState: MeetingState = {
     meetingDetail: null,
     videoEnabled: true,
     audioEnabled: true,
+    messages: [],
 };
 
 export default function meetingReducer(state = initialState, action: MeetingAction): MeetingState {
@@ -42,6 +45,8 @@ export default function meetingReducer(state = initialState, action: MeetingActi
                 meeting: action.payload.meeting,
                 meetingDetail: action.payload.meetingDetail,
                 stream: action.payload.stream,
+                userId: action.payload.userId,
+                name: action.payload.name,
             };
         case JOINED:
             return { ...state };
@@ -62,6 +67,9 @@ export default function meetingReducer(state = initialState, action: MeetingActi
             return { ...state, audioEnabled: action.payload.audioEnabled };
         case CONNECTION_SETTING_CHANGE:
             return { ...state, connections: [...state.connections] };
+        case SEND_MESSAGE:
+        case RECIEVE_MESSAGE:
+            return { ...state, messages: [...state.messages, action.payload.message] };
         default:
             return { ...state };
     }
