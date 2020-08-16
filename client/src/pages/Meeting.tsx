@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, FormEvent } from 'react';
 import { useParams, useHistory } from 'react-router-dom';
 import * as MeetingApi from '../lib/meeting-api';
 import Layout, { Header, Footer } from '../components/Layout';
@@ -37,7 +37,8 @@ const MeetingPage: React.FC = () => {
         }
     };
 
-    const joinMeeting = () => {
+    const joinMeeting = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         if (meetingDetail) {
             localStorage.setItem('name', name);
             setAskName(false);
@@ -58,20 +59,22 @@ const MeetingPage: React.FC = () => {
                 <Content>
                     <Wrapper className="ask-name-wrapper p-4 md:p-8">
                         <div className="ask-name-container ">
-                            <Input
-                                size="medium"
-                                placeholder="Enter your name"
-                                className="name mb-4 w-full"
-                                onChange={(event) => setName(event.target.value)}
-                            />
-                            <Button
-                                size="medium"
-                                onClick={joinMeeting}
-                                disabled={!name}
-                                className="w-full mb-4"
-                            >
-                                Join
-                            </Button>
+                            <form onSubmit={joinMeeting}>
+                                <Input
+                                    size="medium"
+                                    placeholder="Enter your name"
+                                    className="name mb-4 w-full"
+                                    onChange={(event) => setName(event.target.value)}
+                                />
+                                <Button
+                                    type="submit"
+                                    size="medium"
+                                    disabled={!name}
+                                    className="w-full mb-4"
+                                >
+                                    Join
+                                </Button>
+                            </form>
                         </div>
                     </Wrapper>
                 </Content>

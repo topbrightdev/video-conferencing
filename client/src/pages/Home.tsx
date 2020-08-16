@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, FormEvent } from 'react';
 import Layout, { Header, Footer } from '../components/Layout';
 import Content from '../components/Layout/Content';
 import styled from 'styled-components';
@@ -35,7 +35,8 @@ const HomePage: React.FC = () => {
         history.push(`/meeting/${meetingId}`);
     };
 
-    const joinMeeting = () => {
+    const joinMeeting = (event: FormEvent<HTMLFormElement>) => {
+        event.preventDefault();
         history.push(`/meeting/${meetingId}`);
     };
 
@@ -56,20 +57,22 @@ const HomePage: React.FC = () => {
                                 <h4 className="text-lg text-gray-500 mb-4">
                                     Connect wih your family and friends with our group video calls
                                 </h4>
-                                <Input
-                                    size="medium"
-                                    placeholder="Enter meeting Id"
-                                    className="name mb-4 w-full"
-                                    onChange={(event) => setMeetingId(event.target.value)}
-                                />
-                                <Button
-                                    size="medium"
-                                    onClick={joinMeeting}
-                                    disabled={!meetingId}
-                                    className="w-full mb-4"
-                                >
-                                    Join meeting
-                                </Button>
+                                <form onSubmit={joinMeeting}>
+                                    <Input
+                                        size="medium"
+                                        placeholder="Enter meeting Id"
+                                        className="name mb-4 w-full"
+                                        onChange={(event) => setMeetingId(event.target.value)}
+                                    />
+                                    <Button
+                                        type="submit"
+                                        size="medium"
+                                        disabled={!meetingId}
+                                        className="w-full mb-4"
+                                    >
+                                        Join meeting
+                                    </Button>
+                                </form>
                                 <Button size="medium" onClick={startMeeting} className="w-full">
                                     Start a new meeting
                                 </Button>
