@@ -24,6 +24,10 @@ import MicOffIcon from '@material-ui/icons/MicOff';
 import ChatIcon from '@material-ui/icons/Chat';
 import ChatRoom from './ChatRoom';
 import { MessageFormat } from '../lib/meeting/types';
+import Popover from '@material-ui/core/Popover';
+import { ListItem, List } from '@material-ui/core';
+import { CopyToClipboard } from 'react-copy-to-clipboard';
+import { useSnackbar } from 'react-simple-snackbar';
 
 const Wrapper = styled.div`
     background-color: #000;
@@ -47,6 +51,10 @@ const MeetingRoom = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const { id } = useParams();
+    const [openSnackbar, closeSnackbar] = useSnackbar({
+        position: 'top-center',
+    });
+
     const { meeting, meetingDetail, stream, connections, videoEnabled, audioEnabled } = useSelector<
         RootState,
         MeetingState
@@ -55,6 +63,7 @@ const MeetingRoom = () => {
     const name = loadUserName();
     const isHost = userId === meetingDetail?.hostId;
     const [isChatOpen, setChatOpen] = useState(false);
+    const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
 
     const handleLeaveClick = () => {
         meeting?.leave();
@@ -85,7 +94,13 @@ const MeetingRoom = () => {
     const handleIncomingMessage = (message: MessageFormat) => {
         dispatch(receivedMessage(message));
     };
-    
+    const handleInviteClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setAnchorEl(event.currentTarget);
+    };
+    const handleClose = () => {
+        setAnchorEl(null);
+    };
+    const open = Boolean(anchorEl);
     useEffect(() => {
         meeting?.on('user-left', handleUserLeft);
         meeting?.on('ended', handleEndEvent);
@@ -127,6 +142,15 @@ const MeetingRoom = () => {
                     >
                         <ChatIcon />
                     </Button>
+
+                    <Button
+                        size="small"
+                        color="secondary"
+                        onClick={handleInviteClick}
+                        className="mr-4"
+                    >
+                        Invite
+                    </Button>
                     <Button
                         size="small"
                         color="secondary"
@@ -151,6 +175,44 @@ const MeetingRoom = () => {
                 />
             )}
             <ChatRoom visible={isChatOpen} onClose={() => setChatOpen(false)} />
+            <Popover
+                open={open}
+                anchorEl={anchorEl}
+                onClose={handleClose}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'center',
+                }}
+                transformOrigin={{
+                    vertical: 'bottom',
+                    horizontal: 'center',
+                }}
+            >
+                <List>
+                    <ListItem className="cursor-pointer">
+                        <CopyToClipboard
+                            text={id}
+                            onCopy={() => {
+                                openSnackbar('Meeting id copied');
+                                handleClose();
+                            }}
+                        >
+                            <span>Copy Meeting Id</span>
+                        </CopyToClipboard>
+                    </ListItem>
+                    <ListItem className="cursor-pointer">
+                        <CopyToClipboard
+                            text={`http://localhost:3000/meeting/${id}`}
+                            onCopy={() => {
+                                openSnackbar('Meeting link copied');
+                                handleClose();
+                            }}
+                        >
+                            <span>Copy Meeting link</span>
+                        </CopyToClipboard>
+                    </ListItem>
+                </List>
+            </Popover>
         </Wrapper>
     );
 };

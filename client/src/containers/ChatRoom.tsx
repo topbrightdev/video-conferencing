@@ -1,5 +1,5 @@
 import React, { useState, FormEvent } from 'react';
-import { Drawer, ListItem, ListItemText, List } from '@material-ui/core';
+import { Drawer, ListItem, List } from '@material-ui/core';
 import { MeetingState } from '../store/meeting/types';
 import { useSelector, useDispatch } from 'react-redux';
 import { RootState } from '../store/reducer';
