@@ -36,10 +36,18 @@ export interface JoinedMeetingData {
 export interface UserJoinedData {
     userId: string;
     name: string;
+    config: {
+        videoEnabled: boolean;
+        audioEnabled: boolean;
+    };
 }
 export interface IncomingConnectionRequestData {
     userId: string;
     name: string;
+    config: {
+        videoEnabled: boolean;
+        audioEnabled: boolean;
+    };
 }
 export interface OfferSdpData {
     userId: string;

@@ -37,6 +37,8 @@ export default class Meeting extends EventEmitter {
     userId: string | null = null;
     name: string = '';
     messages: MessageFormat[] = [];
+    videoEnabled: boolean = true;
+    audioEnabled: boolean = true;
 
     constructor(options: MeetingOptions) {
         super();
@@ -132,7 +134,14 @@ export default class Meeting extends EventEmitter {
     }
 
     join() {
-        this.sendMessage('join-meeting', { name: this.name, userId: this.userId });
+        this.sendMessage('join-meeting', {
+            name: this.name,
+            userId: this.userId,
+            config: {
+                audioEnabled: this.audioEnabled,
+                videoEnabled: this.videoEnabled,
+            },
+        });
     }
 
     joinedMeeting(data: JoinedMeetingData) {
@@ -147,6 +156,8 @@ export default class Meeting extends EventEmitter {
                 userId: data.userId,
                 name: data.name,
                 stream: this.stream,
+                audioEnabled: data.config?.audioEnabled,
+                videoEnabled: data.config?.videoEnabled,
             });
             connection.on('connected', () => {
                 console.log('rtp connected');
@@ -181,6 +192,10 @@ export default class Meeting extends EventEmitter {
             userId: this.userId,
             otherUserId: userId,
             name: this.name,
+            config: {
+                videoEnabled: this.videoEnabled,
+                audioEnabled: this.audioEnabled,
+            },
         });
     }
 
@@ -255,7 +270,7 @@ export default class Meeting extends EventEmitter {
         const videoTrack = this.stream?.getVideoTracks()[0];
         if (videoTrack) {
             const videoEnabled = (videoTrack.enabled = !videoTrack.enabled);
-
+            this.videoEnabled = videoEnabled;
             this.sendMessage('video-toggle', {
                 userId: this.userId,
                 videoEnabled,
@@ -268,6 +283,7 @@ export default class Meeting extends EventEmitter {
         const audioTrack = this.stream?.getAudioTracks()[0];
         if (audioTrack) {
             const audioEnabled = (audioTrack.enabled = !audioTrack.enabled);
+            this.audioEnabled = audioEnabled;
             this.sendMessage('audio-toggle', {
                 userId: this.userId,
                 audioEnabled,
@@ -302,7 +318,7 @@ export default class Meeting extends EventEmitter {
             },
         });
     }
-    stopStream(){
+    stopStream() {
         this.stream?.getTracks().forEach((track) => track.stop());
     }
     destroy() {

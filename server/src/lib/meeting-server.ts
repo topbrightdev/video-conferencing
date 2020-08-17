@@ -120,6 +120,7 @@ function joinMeeting(meetingId: string, socket: Websocket, payload: MessagePaylo
         data: {
             userId,
             name,
+            ...payload.data,
         },
     });
 }
@@ -127,6 +128,10 @@ interface ConnectWithOtherUserPayloadData {
     userId: string;
     otherUserId: string;
     name: string;
+    config: {
+        videoEnabled: boolean;
+        audioEnabled: boolean;
+    };
 }
 function connectionRequest(meetingId: string, socket: Websocket, payload: MessagePayload) {
     const { userId, otherUserId, name } = payload.data as ConnectWithOtherUserPayloadData;
@@ -137,6 +142,7 @@ function connectionRequest(meetingId: string, socket: Websocket, payload: Messag
             data: {
                 userId,
                 name,
+                ...payload.data,
             },
         });
     }

@@ -5,7 +5,7 @@ interface FooterProps {}
 const Footer: React.FC<FooterProps> = () => {
     return (
         <div className="flex">
-            <p>Copyright @2020</p>
+            {/* <p>Copyright @2020</p> */}
         </div>
     );
 };

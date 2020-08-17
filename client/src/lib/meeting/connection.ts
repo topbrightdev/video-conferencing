@@ -7,6 +7,8 @@ interface ConnectionOptions {
     connectionType: ConnectionType;
     name: string;
     stream: MediaStream;
+    videoEnabled: boolean;
+    audioEnabled: boolean;
 }
 
 export default class Connection extends Rtp {
@@ -20,8 +22,10 @@ export default class Connection extends Rtp {
         this.userId = options.userId;
         this.connectionType = options.connectionType;
         this.name = options.name;
+        this.audioEnabled = options.audioEnabled;
+        this.videoEnabled = options.videoEnabled;
     }
-    
+
     toggleVideo(videoEnabled: boolean) {
         this.videoEnabled = videoEnabled;
     }
