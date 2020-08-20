@@ -8,60 +8,71 @@ const ConnectionVideoGrid = styled.div`
     .item {
         position: relative;
         padding: 0.5rem;
-        justify-self: center;
-        align-self: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
     }
     &.span-1 {
         grid-template-columns: [col-1] 100%;
-        grid-template-rows: [row-1] calc(100vh - 4rem);
+        grid-template-rows: [row-1] calc(100vh - 6rem);
         .item-1 {
             grid-column-start: col-1 1;
+            height: 100%;
         }
     }
     &.span-2 {
         grid-template-columns: [col-1] 50% [col-2] 50%;
-        grid-template-rows: [row-1] calc(100vh - 4rem);
+        grid-template-rows: [row-1] calc(100vh - 6rem);
         .item-1 {
             grid-column-start: col-1;
+            height: 100%;
         }
         .item-2 {
             grid-column-start: col-2 1;
+            height: 100%;
         }
     }
     &.span-3 {
         grid-template-columns: [col-1] 50% [col-2] 50%;
-        grid-template-rows: [row-1] calc(50vh - 2rem) [row-2] calc(50vh - 2rem);
+        grid-template-rows: [row-1] calc(50vh - 3rem) [row-2] calc(50vh - 3rem);
         .item-1 {
             grid-column-start: col-1 1;
             grid-row-start: row-1 1;
+            height: 50%;
         }
         .item-2 {
             grid-column-start: col-2 1;
             grid-row-start: row-1 1;
+            height: 50%;
         }
         .item-3 {
             grid-column-start: col-1 1;
             grid-row-start: row-2 1;
+            height: 50%;
         }
     }
     &.span-4 {
         grid-template-columns: [col-1] 50% [col-2] 50%;
-        grid-template-rows: [row-1] calc(50vh - 2rem) [row-2] calc(50vh - 2rem);
+        grid-template-rows: [row-1] calc(50vh - 3rem) [row-2] calc(50vh - 3rem);
         .item-1 {
             grid-column-start: col-1 1;
             grid-row-start: row-1 1;
+            height: 50%;
         }
         .item-2 {
             grid-column-start: col-2 1;
             grid-row-start: row-1 1;
+            height: 50%;
         }
         .item-3 {
             grid-column-start: col-1 1;
             grid-row-start: row-2 1;
+            height: 50%;
         }
         .item-4 {
             grid-column-start: col-2 1;
             grid-row-start: row-2 1;
+            height: 50%;
         }
     }
 `;
