@@ -98,8 +98,8 @@ export default class Meeting extends EventEmitter {
             case 'user-joined':
                 this.userJoined(payload.data);
                 break;
-            case 'incoming-connection-request':
-                this.incomingConnectionRequest(payload.data);
+            case 'connection-request':
+                this.recievedConnectionRequest(payload.data);
                 break;
             case 'offer-sdp':
                 this.recieveOfferSdp(payload.data);
@@ -176,7 +176,7 @@ export default class Meeting extends EventEmitter {
     userJoined(data: UserJoinedData) {
         const connection = this.createConnection(data);
         if (connection) {
-            this.requestConnection(connection.userId);
+            this.sendConnectionRequest(connection.userId);
         }
     }
 
@@ -187,7 +187,8 @@ export default class Meeting extends EventEmitter {
             candidate,
         });
     }
-    requestConnection(userId: string) {
+    
+    sendConnectionRequest(userId: string) {
         this.sendMessage('connection-request', {
             userId: this.userId,
             otherUserId: userId,
@@ -199,7 +200,7 @@ export default class Meeting extends EventEmitter {
         });
     }
 
-    incomingConnectionRequest(data: IncomingConnectionRequestData) {
+    recievedConnectionRequest(data: IncomingConnectionRequestData) {
         const connection = this.createConnection(data);
         if (connection) {
             this.sendOfferSdp(data.userId);
@@ -223,7 +224,8 @@ export default class Meeting extends EventEmitter {
     async sendAnswerSdp(otherUserId: string, sdp: any) {
         const connection = this.getConnection(otherUserId);
         if (connection) {
-            const answerSdp = await connection?.createAnswer(sdp);
+            await connection?.setOfferSdp(sdp);
+            const answerSdp = await connection?.createAnswer();
             this.sendMessage('answer-sdp', {
                 userId: this.userId,
                 otherUserId: otherUserId,

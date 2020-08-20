@@ -1,7 +1,7 @@
 export type IncomingMessageType =
     | 'joined-meeting'
     | 'user-joined'
-    | 'incoming-connection-request'
+    | 'connection-request'
     | 'offer-sdp'
     | 'answer-sdp'
     | 'icecandidate'

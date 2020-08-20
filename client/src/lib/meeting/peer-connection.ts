@@ -10,7 +10,7 @@ const configuration: RTCConfiguration = {
 interface RtpOptions {
     stream: MediaStream;
 }
-export default class Rtp extends EventEmitter {
+export default class PeerConnection extends EventEmitter {
     rtcPeerConnection: RTCPeerConnection | null = null;
     remoteStream: MediaStream | null = null;
     localStream: MediaStream | null = null;
@@ -23,6 +23,7 @@ export default class Rtp extends EventEmitter {
     start() {
         this.rtcPeerConnection = new RTCPeerConnection(configuration);
         this.addTrack();
+        this.listenNegotiationNeeded();
         this.listenRemoteTrack();
         this.listenCandidate();
         this.emit('connected');
@@ -33,7 +34,12 @@ export default class Rtp extends EventEmitter {
             this.rtcPeerConnection?.addTrack(track);
         });
     }
-
+    listenNegotiationNeeded() {
+        this.rtcPeerConnection?.addEventListener('negotiationneeded', () => {
+            console.log('negotiationneeded');
+            this.emit('negotiationneeded');
+        });
+    }
     listenRemoteTrack() {
         this.remoteStream = new MediaStream();
         this.rtcPeerConnection?.addEventListener('track', (event: RTCTrackEvent) => {
@@ -65,12 +71,12 @@ export default class Rtp extends EventEmitter {
             return offerSdp;
         }
     }
-
-    async createAnswer(offerSdp: any): Promise<RTCSessionDescription | undefined> {
+    async setOfferSdp(offerSdp: any) {
         if (offerSdp) {
             await this.rtcPeerConnection?.setRemoteDescription(new RTCSessionDescription(offerSdp));
         }
-
+    }
+    async createAnswer(): Promise<RTCSessionDescription | undefined> {
         const answerSessionDescInit = await this.rtcPeerConnection?.createAnswer({
             offerToReceiveVideo: true,
             offerToReceiveAudio: true,

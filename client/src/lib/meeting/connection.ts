@@ -1,4 +1,4 @@
-import Rtp from './rtp';
+import PeerConnection from './peer-connection';
 
 type ConnectionType = 'incoming' | 'outgoing';
 
@@ -11,12 +11,13 @@ interface ConnectionOptions {
     audioEnabled: boolean;
 }
 
-export default class Connection extends Rtp {
+export default class Connection extends PeerConnection {
     userId: string;
     connectionType: ConnectionType;
     name: string;
     videoEnabled: boolean = true;
     audioEnabled: boolean = true;
+    
     constructor(options: ConnectionOptions) {
         super({ stream: options.stream });
         this.userId = options.userId;

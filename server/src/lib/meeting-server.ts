@@ -133,12 +133,12 @@ interface ConnectWithOtherUserPayloadData {
         audioEnabled: boolean;
     };
 }
-function connectionRequest(meetingId: string, socket: Websocket, payload: MessagePayload) {
+function forwardConnectionRequest(meetingId: string, socket: Websocket, payload: MessagePayload) {
     const { userId, otherUserId, name } = payload.data as ConnectWithOtherUserPayloadData;
     const otherUser = getMeetingUser(meetingId, otherUserId);
     if (otherUser?.socket) {
         sendMessage(otherUser?.socket, {
-            type: 'incoming-connection-request',
+            type: 'connection-request',
             data: {
                 userId,
                 name,
@@ -253,7 +253,7 @@ function handleMessage(meetingId: string, socket: Websocket, message: Data) {
                 joinMeeting(meetingId, socket, payload);
                 break;
             case 'connection-request':
-                connectionRequest(meetingId, socket, payload);
+                forwardConnectionRequest(meetingId, socket, payload);
                 break;
             case 'offer-sdp':
                 forwardOfferSdp(meetingId, socket, payload);
