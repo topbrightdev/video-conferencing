@@ -48,8 +48,8 @@ const Wrapper = styled.div`
     }
 `;
 const MeetingRoom = () => {
-    const history = useHistory();
     const dispatch = useDispatch();
+    const history = useHistory();
     const { id } = useParams();
     const [openSnackbar] = useSnackbar({
         position: 'top-center',
@@ -202,7 +202,7 @@ const MeetingRoom = () => {
                     </ListItem>
                     <ListItem className="cursor-pointer">
                         <CopyToClipboard
-                            text={`http://localhost:3000/meeting/${id}`}
+                            text={window.location.href}
                             onCopy={() => {
                                 openSnackbar('Meeting link copied');
                                 handleClose();

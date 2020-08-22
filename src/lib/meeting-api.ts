@@ -1,7 +1,6 @@
 import axios from 'axios';
 import { loadUserId } from './user';
 
-console.log(process.env);
 const MeetingApi = axios.create({ baseURL: `${process.env.REACT_APP_API_URL}/meeting` });
 
 interface StartResponse {
