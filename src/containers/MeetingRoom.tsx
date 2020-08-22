@@ -51,7 +51,7 @@ const MeetingRoom = () => {
     const history = useHistory();
     const dispatch = useDispatch();
     const { id } = useParams();
-    const [openSnackbar, closeSnackbar] = useSnackbar({
+    const [openSnackbar] = useSnackbar({
         position: 'top-center',
     });
 
