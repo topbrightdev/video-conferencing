@@ -19,7 +19,7 @@ import {
     MessageData,
 } from './types';
 
-const url = 'ws://localhost:8081/websocket/meeting';
+const url = `${process.env.REACT_APP_WS_URL}/meeting`;
 
 interface MeetingOptions {
     meetingId: string;
@@ -187,7 +187,7 @@ export default class Meeting extends EventEmitter {
             candidate,
         });
     }
-    
+
     sendConnectionRequest(userId: string) {
         this.sendMessage('connection-request', {
             userId: this.userId,
