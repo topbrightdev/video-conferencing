@@ -47,6 +47,7 @@ interface ConnectionVideoItemProps extends DivDetailedProps {
     name: string;
     audioEnabled: boolean;
     videoEnabled: boolean;
+    muted?: boolean;
 }
 
 const ConnectionVideoItem: React.FC<ConnectionVideoItemProps> = ({
@@ -54,6 +55,7 @@ const ConnectionVideoItem: React.FC<ConnectionVideoItemProps> = ({
     name,
     videoEnabled,
     audioEnabled,
+    muted,
     ...props
 }) => {
     return (
@@ -63,7 +65,7 @@ const ConnectionVideoItem: React.FC<ConnectionVideoItemProps> = ({
                     'border border-green-500': !videoEnabled,
                 })}
             >
-                {stream && <VideoElement stream={stream} className="w-full" />}
+                {stream && <VideoElement stream={stream} className="w-full" muted={muted} />}
                 {!videoEnabled && (
                     <div className="video-placeholder text-5xl text-white uppercase">{name}</div>
                 )}

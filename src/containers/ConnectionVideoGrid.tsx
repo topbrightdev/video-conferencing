@@ -94,6 +94,7 @@ const RemoteConnections: React.FC<RemoteConnectionsProps> = ({ connections, loca
                 name={local.name}
                 audioEnabled={local.audioEnabled}
                 videoEnabled={local.videoEnabled}
+                muted
                 key={'local-connection'}
             />
             {connections.map((connection, index) => {
@@ -104,6 +105,7 @@ const RemoteConnections: React.FC<RemoteConnectionsProps> = ({ connections, loca
                         name={connection.name}
                         audioEnabled={connection.audioEnabled}
                         videoEnabled={connection.videoEnabled}
+                        muted={false}
                         key={connection.userId}
                     />
                 );

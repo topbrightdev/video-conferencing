@@ -6,15 +6,16 @@ type VideoDetailedProps = DetailedHTMLProps<
 >;
 interface VideoElementProps extends VideoDetailedProps {
     stream: MediaStream;
+    muted?: boolean;
 }
 
-const VideoElement: React.FC<VideoElementProps> = ({ stream, ...props }) => {
+const VideoElement: React.FC<VideoElementProps> = ({ stream, muted = true, ...props }) => {
     const ref = useRef<HTMLVideoElement>(null);
 
     const initElement = () => {
         if (ref?.current) {
-            ref.current.volume = 0.1;
-            ref.current.muted = true;
+            ref.current.volume = muted ? 0.1 : 1.0;
+            ref.current.muted = muted;
         }
     };
 
