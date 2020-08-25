@@ -1,4 +1,7 @@
 import { EventEmitter } from 'events';
+import adapter from 'webrtc-adapter';
+
+console.log(adapter.browserDetails.browser);
 
 const configuration: RTCConfiguration = {
     iceServers: [

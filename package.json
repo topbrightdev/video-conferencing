@@ -19,7 +19,8 @@
         "redux-thunk": "^2.3.0",
         "styled-components": "^5.1.1",
         "tailwindcss": "^1.6.2",
-        "uuid": "^8.3.0"
+        "uuid": "^8.3.0",
+        "webrtc-adapter": "^7.7.0"
     },
     "scripts": {
         "build:css": "tailwindcss build ./src/styles/tailwind.css -o ./src/styles/main.css",

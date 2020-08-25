@@ -14,8 +14,13 @@ import { MeetingDetail } from '../types';
 
 const Wrapper = styled.div`
     .ask-name-container {
-        width: 400px;
-        margin: 0px auto;
+        width: 100%;
+    }
+    @media screen and (min-width: 400px) {
+        .ask-name-container {
+            width: 400px;
+            margin: 0px auto;
+        }
     }
 `;
 const MeetingPage: React.FC = () => {
