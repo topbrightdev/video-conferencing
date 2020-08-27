@@ -67,7 +67,7 @@ const ConnectionVideoItem: React.FC<ConnectionVideoItemProps> = ({
             >
                 {stream && <VideoElement stream={stream} className="w-full" muted={muted} />}
                 {!videoEnabled && (
-                    <div className="video-placeholder text-5xl text-white uppercase">{name}</div>
+                    <div className="video-placeholder text-3xl text-white capitalize">{name}</div>
                 )}
                 <div className="name text-white text-sm">{name}</div>
                 <div className="controls text-white">

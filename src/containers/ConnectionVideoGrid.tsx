@@ -5,6 +5,7 @@ import ConnectionVideoItem from '../components/ConnectionVideoItem';
 
 const ConnectionVideoGrid = styled.div`
     display: grid;
+    height: calc(100vh - 6rem);
     .item {
         position: relative;
         padding: 0.5rem;
@@ -13,66 +14,151 @@ const ConnectionVideoGrid = styled.div`
         justify-content: center;
     }
     &.span-1 {
-        grid-template-columns: [col-1] 100%;
-        grid-template-rows: [row-1] calc(100vh - 6rem);
+        display: grid;
+        grid-template-columns: 1fr;
+        grid-template-rows: 1fr;
+        gap: 1px 1px;
+        grid-template-areas: 'a';
         .item-1 {
-            grid-column-start: col-1 1;
-            height: 100%;
+            grid-area: a;
         }
     }
     &.span-2 {
-        grid-template-columns: [col-1] 50% [col-2] 50%;
-        grid-template-rows: [row-1] calc(100vh - 6rem);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr;
+        gap: 1px 1px;
+        grid-template-areas: 'a b';
         .item-1 {
-            grid-column-start: col-1;
-            height: 100%;
+            grid-area: a;
         }
         .item-2 {
-            grid-column-start: col-2 1;
-            height: 100%;
+            grid-area: b;
         }
     }
-    &.span-3 {
-        grid-template-columns: [col-1] 50% [col-2] 50%;
-        grid-template-rows: [row-1] calc(50vh - 3rem) [row-2] calc(50vh - 3rem);
-        .item-1 {
-            grid-column-start: col-1 1;
-            grid-row-start: row-1 1;
-            height: 50%;
-        }
-        .item-2 {
-            grid-column-start: col-2 1;
-            grid-row-start: row-1 1;
-            height: 50%;
-        }
-        .item-3 {
-            grid-column-start: col-1 1;
-            grid-row-start: row-2 1;
-            height: 50%;
-        }
-    }
+    &.span-3,
     &.span-4 {
-        grid-template-columns: [col-1] 50% [col-2] 50%;
-        grid-template-rows: [row-1] calc(50vh - 3rem) [row-2] calc(50vh - 3rem);
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 1px 1px;
+        grid-template-areas: 'a b ' 'c d';
         .item-1 {
-            grid-column-start: col-1 1;
-            grid-row-start: row-1 1;
-            height: 50%;
+            grid-area: a;
         }
         .item-2 {
-            grid-column-start: col-2 1;
-            grid-row-start: row-1 1;
-            height: 50%;
+            grid-area: b;
         }
         .item-3 {
-            grid-column-start: col-1 1;
-            grid-row-start: row-2 1;
-            height: 50%;
+            grid-area: c;
         }
         .item-4 {
-            grid-column-start: col-2 1;
-            grid-row-start: row-2 1;
-            height: 50%;
+            grid-area: d;
+        }
+    }
+
+    &.span-5,
+    &.span-6 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 1px 1px;
+        grid-template-areas: 'a b c' 'd e f';
+        .item-1 {
+            grid-area: a;
+        }
+        .item-2 {
+            grid-area: b;
+        }
+        .item-3 {
+            grid-area: c;
+        }
+        .item-4 {
+            grid-area: d;
+        }
+        .item-5 {
+            grid-area: e;
+        }
+        .item-6 {
+            grid-area: f;
+        }
+    }
+    &.span-7,
+    &.span-8 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr;
+        gap: 1px 1px;
+        grid-template-areas: 'a b c d' 'f e g h';
+        .item-1 {
+            grid-area: a;
+        }
+        .item-2 {
+            grid-area: b;
+        }
+        .item-3 {
+            grid-area: c;
+        }
+        .item-4 {
+            grid-area: d;
+        }
+        .item-5 {
+            grid-area: e;
+        }
+        .item-6 {
+            grid-area: f;
+        }
+        .item-7 {
+            grid-area: g;
+        }
+        .item-8 {
+            grid-area: h;
+        }
+    }
+    &.span-9,
+    &.span-10,
+    &.span-11,
+    &.span-12 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr 1fr;
+        grid-template-rows: 1fr 1fr 1fr;
+        gap: 1px 1px;
+        grid-template-areas: 'a b c d' 'f e g h' 'i j k l';
+        .item-1 {
+            grid-area: a;
+        }
+        .item-2 {
+            grid-area: b;
+        }
+        .item-3 {
+            grid-area: c;
+        }
+        .item-4 {
+            grid-area: d;
+        }
+        .item-5 {
+            grid-area: e;
+        }
+        .item-6 {
+            grid-area: f;
+        }
+        .item-7 {
+            grid-area: g;
+        }
+        .item-8 {
+            grid-area: h;
+        }
+        .item-9 {
+            grid-area: i;
+        }
+        .item-10 {
+            grid-area: j;
+        }
+        .item-11 {
+            grid-area: k;
+        }
+        .item-12 {
+            grid-area: l;
         }
     }
 `;
@@ -86,8 +172,14 @@ interface RemoteConnectionsProps {
     };
 }
 const RemoteConnections: React.FC<RemoteConnectionsProps> = ({ connections, local }) => {
+    const height = window.innerHeight - 100;
+    const totalConnection = connections.length + 1;
+
     return (
-        <ConnectionVideoGrid className={`span-${connections.length + 1}`}>
+        <ConnectionVideoGrid
+            className={`span-${totalConnection}`}
+            style={{ height: height + 'px', display: 'grid' }}
+        >
             <ConnectionVideoItem
                 className={`item item-1`}
                 stream={local.stream}
