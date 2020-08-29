@@ -92,7 +92,7 @@ export default class Transport extends EventEmitter {
     }
     sendHeartBeat() {
         this.timer = setInterval(() => {
-            this.send(JSON.stringify({ type: 'heartbeart' }));
+            this.send(JSON.stringify({ type: 'heartbeat' }));
         }, 10 * 1000);
     }
     close() {
