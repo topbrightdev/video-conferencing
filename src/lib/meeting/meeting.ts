@@ -130,6 +130,9 @@ export default class Meeting extends EventEmitter {
             case 'message':
                 this.handleUserMessage(payload.data);
                 break;
+            case 'not-found':
+                this.handleNotFound();
+                break;
             default:
                 break;
         }
@@ -315,7 +318,9 @@ export default class Meeting extends EventEmitter {
         this.messages.push(data.message);
         this.emit('message', data.message);
     }
-
+    handleNotFound(){
+        this.emit('not-found');
+    }
     sendUserMessage(text: string) {
         this.sendMessage('message', {
             userId: this.userId,

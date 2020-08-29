@@ -10,6 +10,7 @@ export type IncomingMessageType =
     | 'video-toggle'
     | 'audio-toggle'
     | 'message'
+    | 'not-found'
     | 'unknown';
 export type OutgoingMessageType =
     | 'join-meeting'
@@ -22,6 +23,7 @@ export type OutgoingMessageType =
     | 'video-toggle'
     | 'audio-toggle'
     | 'message'
+    | 'heartbeat'
     | 'unknown';
 export type MessageType = IncomingMessageType | OutgoingMessageType;
 

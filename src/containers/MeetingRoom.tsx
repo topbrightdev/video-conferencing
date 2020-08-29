@@ -117,6 +117,11 @@ const MeetingRoom = () => {
     const handleReconnect = () => {
         meeting?.reconnect();
     };
+    const handleNotFound = () => {
+        openSnackbar('Meeting Ended');
+        history.replace('/');
+        dispatch(end());
+    };
     const open = Boolean(anchorEl);
     useEffect(() => {
         meeting?.on('open', handleOpen);
@@ -124,6 +129,7 @@ const MeetingRoom = () => {
         meeting?.on('ended', handleEndEvent);
         meeting?.on('connection-setting-changed', handleConnectionSettingChange);
         meeting?.on('message', handleIncomingMessage);
+        meeting?.on('not-found', handleNotFound);
         meeting?.on('failed', handleConnectionFailed);
 
         return () => {
@@ -132,6 +138,7 @@ const MeetingRoom = () => {
             meeting?.off('ended', handleEndEvent);
             meeting?.off('connection-setting-changed', handleConnectionSettingChange);
             meeting?.off('message', handleIncomingMessage);
+            meeting?.off('not-found', handleNotFound);
             meeting?.off('failed', handleConnectionFailed);
         };
     });
