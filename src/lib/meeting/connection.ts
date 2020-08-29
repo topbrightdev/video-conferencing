@@ -1,6 +1,6 @@
 import PeerConnection from './peer-connection';
 
-type ConnectionType = 'incoming' | 'outgoing';
+type ConnectionType = 'incoming' | 'outgoing' | 'self';
 
 interface ConnectionOptions {
     userId: string;
@@ -9,6 +9,7 @@ interface ConnectionOptions {
     stream: MediaStream;
     videoEnabled: boolean;
     audioEnabled: boolean;
+    muted?: boolean;
 }
 
 export default class Connection extends PeerConnection {
@@ -17,7 +18,8 @@ export default class Connection extends PeerConnection {
     name: string;
     videoEnabled: boolean = true;
     audioEnabled: boolean = true;
-    
+    muted: boolean = false;
+
     constructor(options: ConnectionOptions) {
         super({ stream: options.stream });
         this.userId = options.userId;
@@ -25,6 +27,7 @@ export default class Connection extends PeerConnection {
         this.name = options.name;
         this.audioEnabled = options.audioEnabled;
         this.videoEnabled = options.videoEnabled;
+        this.muted = !!options.muted;
     }
 
     toggleVideo(videoEnabled: boolean) {

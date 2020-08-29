@@ -28,6 +28,7 @@ import Popover from '@material-ui/core/Popover';
 import { ListItem, List } from '@material-ui/core';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'react-simple-snackbar';
+import ConnectionPageView from './ConnectionPageView';
 
 const Wrapper = styled.div`
     background-color: #000;
@@ -115,7 +116,7 @@ const MeetingRoom = () => {
         };
     });
     return (
-        <Wrapper className="w-full h-screen">
+        <Wrapper className="w-full h-screen flex flex-col items-center">
             <div>
                 <div className="flex control-panel justify-center h-16 items-center px-4 bg-gray-700">
                     <Button
@@ -166,10 +167,10 @@ const MeetingRoom = () => {
                     )}
                 </div>
             </div>
-            <div className="bg-yellow-500 text-center text-sm p-1">Meeting Id: {id}</div>
+            <div className="bg-yellow-500 text-center text-sm p-1 w-full">Meeting Id: {id}</div>
 
             {stream && (
-                <ConnectionVideoGrid
+                <ConnectionPageView
                     connections={connections}
                     local={{ stream, name, audioEnabled, videoEnabled }}
                 />

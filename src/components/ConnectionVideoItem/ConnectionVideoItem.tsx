@@ -9,10 +9,12 @@ import cx from 'classnames';
 
 const VideoContainer = styled.div`
     position: relative;
+    height: 100%;
+    width: 100%;
     .name {
         position: absolute;
         padding: 0.25rem 0.5rem;
-        bottom: 0.25rem;
+        bottom: 0;
         left: 0.25rem;
         background-color: rgba(0, 0, 0, 0.5);
     }
@@ -30,7 +32,7 @@ const VideoContainer = styled.div`
     .controls {
         position: absolute;
         padding: 0.25rem 0.5rem;
-        bottom: 0.25rem;
+        bottom: 0;
         right: 0.25rem;
         background-color: rgba(0, 0, 0, 0.5);
     }
@@ -63,6 +65,7 @@ const ConnectionVideoItem: React.FC<ConnectionVideoItemProps> = ({
             <VideoContainer
                 className={cx('video-container', {
                     'border border-green-500': !videoEnabled,
+                    'border border-gray-500': videoEnabled,
                 })}
             >
                 {stream && <VideoElement stream={stream} className="w-full" muted={muted} />}
