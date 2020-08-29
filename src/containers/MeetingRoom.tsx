@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useHistory } from 'react-router-dom';
-import Button from '../components/commons/Button';
 import styled from 'styled-components';
-import ConnectionVideoGrid from './ConnectionVideoGrid';
 import { RootState } from '../store/reducer';
 import { MeetingState } from '../store/meeting/types';
 import { loadUserId, loadUserName } from '../lib/user';
@@ -17,11 +15,7 @@ import {
     receivedMessage,
 } from '../store/meeting/actions';
 import { Connection } from '../lib/meeting';
-import VideocamIcon from '@material-ui/icons/Videocam';
-import VideocamOffIcon from '@material-ui/icons/VideocamOff';
-import MicIcon from '@material-ui/icons/Mic';
-import MicOffIcon from '@material-ui/icons/MicOff';
-import ChatIcon from '@material-ui/icons/Chat';
+
 import ChatRoom from './ChatRoom';
 import { MessageFormat } from '../lib/meeting/types';
 import Popover from '@material-ui/core/Popover';
@@ -29,6 +23,7 @@ import { ListItem, List } from '@material-ui/core';
 import { CopyToClipboard } from 'react-copy-to-clipboard';
 import { useSnackbar } from 'react-simple-snackbar';
 import ConnectionPageView from './ConnectionPageView';
+import ControlPanel from './ControlPanel';
 
 const Wrapper = styled.div`
     background-color: #000;
@@ -65,108 +60,98 @@ const MeetingRoom = () => {
     const isHost = userId === meetingDetail?.hostId;
     const [isChatOpen, setChatOpen] = useState(false);
     const [anchorEl, setAnchorEl] = useState<HTMLButtonElement | null>(null);
+    const [isConnectionFailed, setConnectionFailed] = useState(false);
 
     const handleLeaveClick = () => {
         meeting?.leave();
         dispatch(leave());
         history.replace('/');
     };
+
     const handleEndClick = () => {
         meeting?.end();
         dispatch(end());
         history.replace('/');
     };
+
     const handleToggleVideo = () => {
         dispatch(toggleVideo());
     };
+
     const handleToggleAudio = () => {
         dispatch(toggleAudio());
+    };
+
+    const handleOpen = () => {
+        setConnectionFailed(false);
     };
     const handleUserLeft = (connection: Connection) => {
         dispatch(userLeft(connection));
     };
+
     const handleEndEvent = () => {
         history.replace('/');
         dispatch(end());
     };
+
     const handleConnectionSettingChange = () => {
         dispatch(connectionSettingChange());
     };
+
     const handleIncomingMessage = (message: MessageFormat) => {
         dispatch(receivedMessage(message));
     };
+
     const handleInviteClick = (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setAnchorEl(event.currentTarget);
     };
+
     const handleClose = () => {
         setAnchorEl(null);
     };
+
+    const handleConnectionFailed = () => {
+        openSnackbar('Connection Failed Retry');
+        setConnectionFailed(true);
+    };
+    const handleReconnect = () => {
+        meeting?.reconnect();
+    };
     const open = Boolean(anchorEl);
     useEffect(() => {
+        meeting?.on('open', handleOpen);
         meeting?.on('user-left', handleUserLeft);
         meeting?.on('ended', handleEndEvent);
         meeting?.on('connection-setting-changed', handleConnectionSettingChange);
         meeting?.on('message', handleIncomingMessage);
+        meeting?.on('failed', handleConnectionFailed);
 
         return () => {
-            meeting?.removeListener('user-left', handleUserLeft);
-            meeting?.removeListener('ended', handleEndEvent);
-            meeting?.removeListener('connection-setting-changed', handleConnectionSettingChange);
-            meeting?.removeListener('message', handleIncomingMessage);
+            meeting?.on('open', handleOpen);
+            meeting?.off('user-left', handleUserLeft);
+            meeting?.off('ended', handleEndEvent);
+            meeting?.off('connection-setting-changed', handleConnectionSettingChange);
+            meeting?.off('message', handleIncomingMessage);
+            meeting?.off('failed', handleConnectionFailed);
         };
     });
     return (
         <Wrapper className="w-full h-screen flex flex-col items-center">
-            <div>
-                <div className="flex control-panel justify-center h-16 items-center px-4 bg-gray-700">
-                    <Button
-                        size="small"
-                        color="primary"
-                        className="mr-4"
-                        onClick={handleToggleVideo}
-                    >
-                        {videoEnabled ? <VideocamIcon /> : <VideocamOffIcon />}
-                    </Button>
-                    <Button
-                        size="small"
-                        color="primary"
-                        className="mr-4"
-                        onClick={handleToggleAudio}
-                    >
-                        {audioEnabled ? <MicIcon /> : <MicOffIcon />}
-                    </Button>
-                    <Button
-                        size="small"
-                        color={isChatOpen ? 'secondary' : 'primary'}
-                        className="mr-4"
-                        onClick={() => setChatOpen(true)}
-                    >
-                        <ChatIcon />
-                    </Button>
+            <ControlPanel
+                videoEnabled={videoEnabled}
+                audioEnabled={audioEnabled}
+                onVideoToggle={handleToggleVideo}
+                onAudioToggle={handleToggleAudio}
+                isChatOpen={isChatOpen}
+                onChatToggle={() => setChatOpen(true)}
+                onEndClick={handleEndClick}
+                onLeaveClick={handleLeaveClick}
+                onInviteClick={handleInviteClick}
+                isHost={isHost}
+                isConnectionFailed={isConnectionFailed}
+                onReconnect={handleReconnect}
+            />
 
-                    <Button
-                        size="small"
-                        color="secondary"
-                        onClick={handleInviteClick}
-                        className="mr-4"
-                    >
-                        Invite
-                    </Button>
-                    <Button
-                        size="small"
-                        color="secondary"
-                        onClick={handleLeaveClick}
-                        className="mr-4"
-                    >
-                        Leave
-                    </Button>
-                    {isHost && (
-                        <Button size="small" color="danger" onClick={handleEndClick}>
-                            End
-                        </Button>
-                    )}
-                </div>
-            </div>
             <div className="bg-yellow-500 text-center text-sm p-1 w-full">Meeting Id: {id}</div>
 
             {stream && (

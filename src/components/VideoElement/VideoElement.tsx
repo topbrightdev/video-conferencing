@@ -29,7 +29,17 @@ const VideoElement: React.FC<VideoElementProps> = ({ stream, muted = true, ...pr
         attachStream();
         // eslint-disable-next-line
     }, []);
-    return <video {...props} ref={ref} autoPlay playsInline />;
+    return (
+        <video
+            {...props}
+            ref={ref}
+            autoPlay
+            playsInline
+            onContextMenu={(event) => {
+                event.preventDefault();
+            }}
+        />
+    );
 };
 
 export default VideoElement;

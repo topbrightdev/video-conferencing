@@ -11,6 +11,8 @@ import styled from 'styled-components';
 import Input from '../components/commons/Input';
 import Button from '../components/commons/Button';
 import { MeetingDetail } from '../types';
+import { useSnackbar } from 'react-simple-snackbar';
+import { getErrorMessage } from '../lib/error-handling';
 
 const Wrapper = styled.div`
     .ask-name-container {
@@ -30,14 +32,16 @@ const MeetingPage: React.FC = () => {
     const [meetingDetail, setMeetingDetail] = useState<MeetingDetail | null>(null);
     const [askName, setAskName] = useState(true);
     const [name, setName] = useState(loadUserName());
+    const [openSnackbar] = useSnackbar({
+        position: 'top-center',
+    });
 
     const validateMeeting = async () => {
         try {
             const data = await MeetingApi.join(id);
             setMeetingDetail(data);
         } catch (error) {
-            const { response } = error;
-            console.log(response.data.message);
+            openSnackbar(getErrorMessage(error));
             history.replace('/');
         }
     };

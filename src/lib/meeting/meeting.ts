@@ -47,7 +47,7 @@ export default class Meeting extends EventEmitter {
         this.name = options.name;
         this.transport = new Transport({
             url: this.formatUrl(options.meetingId),
-            reconnect: true,
+            canReconnect: true,
             maxRetry: 3,
         });
         this.stream = options.stream;
@@ -79,6 +79,7 @@ export default class Meeting extends EventEmitter {
         this.transport?.on('open', () => {
             this.connected = true;
             this.join();
+            this.emit('open');
         });
         this.transport?.on('message', (data: any) => {
             const payload = this.parseMessage(data);
@@ -86,6 +87,10 @@ export default class Meeting extends EventEmitter {
         });
         this.transport?.on('closed', () => {
             this.connected = false;
+        });
+        this.transport?.on('failed', () => {
+            this.reset();
+            this.emit('failed');
         });
     }
 
@@ -324,7 +329,7 @@ export default class Meeting extends EventEmitter {
         this.stream?.getTracks().forEach((track) => track.stop());
     }
     destroy() {
-        this.transport?.destroy();
+        this.transport?.close();
         this.transport = null;
         this.connections.forEach((connection) => {
             connection.close();
@@ -334,5 +339,13 @@ export default class Meeting extends EventEmitter {
         this.connected = false;
         this.stream = null;
         this.joined = false;
+    }
+    reset() {
+        this.connections = [];
+        this.joined = false;
+        this.connected = false;
+    }
+    reconnect() {
+        this.transport?.reconnect();
     }
 }

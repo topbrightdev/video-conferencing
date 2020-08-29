@@ -9,6 +9,8 @@ import { useDispatch } from 'react-redux';
 import { start } from '../store/meeting/actions';
 import * as MeetingAPi from '../lib/meeting-api';
 import { useHistory } from 'react-router-dom';
+import { getErrorMessage } from '../lib/error-handling';
+import { useSnackbar } from 'react-simple-snackbar';
 
 const Wrapper = styled.div`
     main {
@@ -28,11 +30,18 @@ const HomePage: React.FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
     const [meetingId, setMeetingId] = useState('');
+    const [openSnackbar] = useSnackbar({
+        position: 'top-center',
+    });
 
     const startMeeting = async () => {
-        const { meetingId } = await MeetingAPi.start('');
-        dispatch(start({ name: '', meetingId }));
-        history.push(`/meeting/${meetingId}`);
+        try {
+            const { meetingId } = await MeetingAPi.start('');
+            dispatch(start({ name: '', meetingId }));
+            history.push(`/meeting/${meetingId}`);
+        } catch (error) {
+            openSnackbar(getErrorMessage(error));
+        }
     };
 
     const joinMeeting = (event: FormEvent<HTMLFormElement>) => {
