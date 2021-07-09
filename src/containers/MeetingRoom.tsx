@@ -46,7 +46,7 @@ const Wrapper = styled.div`
 const MeetingRoom = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const { id } = useParams();
+    const { id } = useParams<{id:string}>();
     const [openSnackbar] = useSnackbar({
         position: 'top-center',
     });

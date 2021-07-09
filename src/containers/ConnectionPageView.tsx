@@ -114,7 +114,7 @@ const ConnectionPageView: React.FC<ConnectionPageViewProps> = ({ connections, lo
         }
         return pages;
     };
-    const handleResize = (width: number, height: number) => {
+    const handleResize = (width: number|undefined, height: number|undefined) => {
         setDimension({
             width: window.innerWidth,
             height: window.innerHeight - 100,

@@ -28,7 +28,7 @@ const Wrapper = styled.div`
 const MeetingPage: React.FC = () => {
     const dispatch = useDispatch();
     const history = useHistory();
-    const { id } = useParams();
+    const { id } = useParams<{id:string}>();
     const [meetingDetail, setMeetingDetail] = useState<MeetingDetail | null>(null);
     const [askName, setAskName] = useState(true);
     const [name, setName] = useState(loadUserName());
